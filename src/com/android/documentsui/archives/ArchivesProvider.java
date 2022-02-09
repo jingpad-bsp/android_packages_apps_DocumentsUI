@@ -17,27 +17,28 @@
 package com.android.documentsui.archives;
 
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MatrixCursor.RowBuilder;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.provider.BaseColumns;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 import androidx.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.documentsui.R;
 import androidx.annotation.GuardedBy;
-
 import android.os.FileUtils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +65,7 @@ public class ArchivesProvider extends DocumentsProvider {
     private static final String METHOD_RELEASE_ARCHIVE = "releaseArchive";
     private static final Set<String> ZIP_MIME_TYPES = ArchiveRegistry.getSupportList();
 
+
     @GuardedBy("mArchives")
     private final Map<Key, Loader> mArchives = new HashMap<>();
 
@@ -89,9 +91,75 @@ public class ArchivesProvider extends DocumentsProvider {
 
     @Override
     public Cursor queryRoots(String[] projection) {
+        // add documents root
+//        final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
+//        includeDocsRoot(result);
+//        return result;
+
         // No roots provided.
         return new MatrixCursor(projection != null ? projection : DEFAULT_ROOTS_PROJECTION);
     }
+
+    private static final String TYPE_DOCS_ROOT = "docs_root";
+    private static final String TYPE_DOCS_BUCKET = "docs_bucket";
+    private static final String TYPE_DOCS = "docs";
+    private static final String DOCS_MIME_TYPES = joinNewline("text/*");
+
+    private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
+            Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
+            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_MIME_TYPES,
+            Root.COLUMN_QUERY_ARGS
+    };
+
+
+
+    private static final String SUPPORTED_QUERY_ARGS = joinNewline(
+            DocumentsContract.QUERY_ARG_DISPLAY_NAME,
+            DocumentsContract.QUERY_ARG_FILE_SIZE_OVER,
+            DocumentsContract.QUERY_ARG_LAST_MODIFIED_AFTER,
+            DocumentsContract.QUERY_ARG_MIME_TYPES);
+
+
+    private void includeDocsRoot(MatrixCursor result) {
+        int flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS | Root.FLAG_SUPPORTS_SEARCH;
+//        if (isEmpty(Images.Media.EXTERNAL_CONTENT_URI)) {
+//            flags |= Root.FLAG_EMPTY;
+//            sReturnedImagesEmpty = true;
+//        }
+
+        final RowBuilder row = result.newRow();
+        row.add(Root.COLUMN_ROOT_ID, TYPE_DOCS_ROOT);
+        row.add(Root.COLUMN_FLAGS, flags);
+        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.chip_title_documents));
+        row.add(Root.COLUMN_DOCUMENT_ID, TYPE_DOCS_ROOT);
+        row.add(Root.COLUMN_MIME_TYPES, DOCS_MIME_TYPES);
+        row.add(Root.COLUMN_QUERY_ARGS, SUPPORTED_QUERY_ARGS);
+    }
+
+    private static String joinNewline(String... args) {
+        return TextUtils.join("\n", args);
+    }
+
+    private static String[] resolveRootProjection(String[] projection) {
+        return projection != null ? projection : DEFAULT_ROOT_PROJECTION;
+    }
+
+    private boolean isEmpty(Uri uri) {
+        final ContentResolver resolver = getContext().getContentResolver();
+        final long token = Binder.clearCallingIdentity();
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(uri, new String[] {
+                    BaseColumns._ID }, null, null, null);
+            return (cursor == null) || (cursor.getCount() == 0);
+        } finally {
+//            IoUtils.closeQuietly(cursor);
+            cursor.close();
+            Binder.restoreCallingIdentity(token);
+        }
+    }
+
+
 
     @Override
     public Cursor queryChildDocuments(String documentId, @Nullable String[] projection,

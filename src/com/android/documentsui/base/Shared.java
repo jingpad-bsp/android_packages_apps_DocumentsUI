@@ -128,6 +128,11 @@ public final class Shared {
     public static final int MAX_DOCS_IN_INTENT = 500;
 
     /**
+     * Max length of text. Used in SearchViewManager
+     */
+    public static final int MAX_TEXT_LENGTH = 100;
+
+    /**
      * Animation duration of checkbox in directory list/grid in millis.
      */
     public static final int CHECK_ANIMATION_DURATION = 100;

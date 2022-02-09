@@ -1,0 +1,30 @@
+涉及到收藏逻辑的主要有以下几个类
+一.com.android.documentsui.files.MenuManager
+这个类是“收藏”“取消收藏”菜单是否展示，以及展示条件的逻辑
+private boolean needFav = true;
+跟着这个变量就可以找到相关的逻辑
+
+二.com.android.documentsui.archives.FavProvider
+收藏功能依赖的provider是咱们自己后续增加的。这个逻辑功能比较独立，主要就是给UI展示提供数据。
+
+三.com.android.documentsui.queries.FavFileListDataManager
+收藏的数据记录，数据库管理都在这个类中。
+每次重新启动后都会从数据库中拿取，组织收藏的数据
+
+四.点击“收藏”“取消收藏”的逻辑入口在com.android.documentsui.dirlist.DirectoryFragment中
+搜索R.id.action_menu_fav和R.id.action_menu_unfav即可
+跟着这个逻辑，就可以跟完整个收藏功能的逻辑流程
+
+五.以“收藏”功能为例，描述一下逻辑流程
+用户点击“收藏”按钮 --> 从uri获取真实路径，存入数据库 --> 通知FavProvider更新数据 --> UI刷新
+
+
+关于文件管理器的界面修改
+界面修改主要包括Layout 的修改和 图片的替换
+1. Layout 修改
+	- fixed_layout.xml (主界面)
+	- item_dir_grid.xml (主界面的Grid 布局)
+	- directory_header.xml (主界面顶部布局)
+
+2. 文件修改
+	- RootsFragment (左侧菜单栏的Item显示处理)

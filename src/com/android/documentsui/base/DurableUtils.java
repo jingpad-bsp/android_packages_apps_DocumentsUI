@@ -18,14 +18,20 @@ package com.android.documentsui.base;
 
 import static com.android.documentsui.base.SharedMinimal.TAG;
 
+import android.content.Context;
 import android.os.BadParcelableException;
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class DurableUtils {
@@ -98,4 +104,74 @@ public class DurableUtils {
             return null;
         }
     }
+
+    //add by hjy start
+    public static void saveParce(Context context, String key, Parcelable parcelable) {
+        FileOutputStream fos;
+        try {
+            fos = context.openFileOutput(key,
+                    Context.MODE_PRIVATE);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            Parcel parcel = Parcel.obtain();
+            parcel.writeParcelable(parcelable, 0);
+
+            bos.write(parcel.marshall());
+            bos.flush();
+            bos.close();
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static DocumentInfo loadDocumentInfo(Context context, String key) {
+        FileInputStream fis;
+        try {
+            fis = context.openFileInput(key);
+            byte[] bytes = new byte[fis.available()];
+            fis.read(bytes);
+            Parcel parcel = Parcel.obtain();
+            parcel.unmarshall(bytes, 0, bytes.length);
+            parcel.setDataPosition(0);
+
+            DocumentInfo data = parcel.readParcelable(DocumentInfo.class.getClassLoader());
+            fis.close();
+            return data;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static RootInfo loadRootInfo(Context context, String key) {
+        FileInputStream fis;
+        try {
+            fis = context.openFileInput(key);
+            byte[] bytes = new byte[fis.available()];
+            fis.read(bytes);
+            Parcel parcel = Parcel.obtain();
+            parcel.unmarshall(bytes, 0, bytes.length);
+            parcel.setDataPosition(0);
+
+            RootInfo data = parcel.readParcelable(RootInfo.class.getClassLoader());
+            fis.close();
+            return data;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean deleteFavInfo(Context context, String key) {
+        File f= new File(context.getFilesDir(), key);
+        if(f.exists()){
+            f.delete();
+            return true;
+        }
+        return false;
+    }
+    //add by hjy end
 }

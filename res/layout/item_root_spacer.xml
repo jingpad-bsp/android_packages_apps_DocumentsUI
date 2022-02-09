@@ -21,9 +21,18 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
-    <View
+    <!-- <View
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/listDivider" />
+        android:background="?android:attr/listDivider" /> -->
+
+     <TextView
+        android:id="@+id/spacer_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginStart="30dp"
+        android:textColor="#FF757575"
+        android:textSize="12sp" />
 
 </FrameLayout>

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.android.documentsui.BaseActivity;
+import com.android.documentsui.LengthFilterToast;
 import com.android.documentsui.Metrics;
 import com.android.documentsui.R;
 import com.android.documentsui.base.DocumentInfo;
@@ -46,8 +48,10 @@ import com.android.documentsui.base.Shared;
 import com.android.documentsui.ui.Snackbars;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
+import android.widget.Toast;
+import android.view.Gravity;
 
 /**
  * Dialog to rename file or directory.
@@ -57,7 +61,8 @@ public class RenameDocumentFragment extends DialogFragment {
     private DocumentInfo mDocument;
     private EditText mEditText;
     private TextInputLayout mRenameInputWrapper;
-    private @Nullable DialogInterface mDialog;
+    private @Nullable
+    DialogInterface mDialog;
 
     public static void show(FragmentManager fm, DocumentInfo document) {
         final RenameDocumentFragment dialog = new RenameDocumentFragment();
@@ -67,6 +72,7 @@ public class RenameDocumentFragment extends DialogFragment {
 
     /**
      * Creates the dialog UI.
+     *
      * @param savedInstanceState
      * @return
      */
@@ -78,6 +84,9 @@ public class RenameDocumentFragment extends DialogFragment {
         View view = dialogInflater.inflate(R.layout.dialog_file_name, null, false);
 
         mEditText = (EditText) view.findViewById(android.R.id.text1);
+        int displayNameLength = (mDocument == null || mDocument.displayName == null) ? 0 : mDocument.displayName.length();
+        int maxLength = Math.max(Shared.MAX_TEXT_LENGTH, displayNameLength);
+        mEditText.setFilters(new InputFilter[]{new LengthFilterToast(getActivity(), maxLength)});
         mRenameInputWrapper = (TextInputLayout) view.findViewById(R.id.input_wrapper);
         mRenameInputWrapper.setHint(getString(R.string.input_hint_rename));
         builder.setTitle(R.string.menu_rename);
@@ -109,7 +118,7 @@ public class RenameDocumentFragment extends DialogFragment {
         return dialog;
     }
 
-    private void onShowDialog(DialogInterface dialog){
+    private void onShowDialog(DialogInterface dialog) {
         mDialog = dialog;
         Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
         button.setOnClickListener(this::onClickDialog);
@@ -121,6 +130,7 @@ public class RenameDocumentFragment extends DialogFragment {
 
     /**
      * Sets/Restores the data.
+     *
      * @param savedInstanceState
      * @return
      */
@@ -128,12 +138,11 @@ public class RenameDocumentFragment extends DialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             // Fragment created for the first time, we set the text.
             // mDocument value was set in show
             mEditText.setText(mDocument.displayName);
-        }
-        else {
+        } else {
             // Fragment restored, text was restored automatically.
             // mDocument value needs to be restored.
             mDocument = savedInstanceState.getParcelable(Shared.EXTRA_DOC);
@@ -156,11 +165,30 @@ public class RenameDocumentFragment extends DialogFragment {
     /**
      * Validates if string is a proper document name.
      * Checks if string is not empty. More rules might be added later.
+     *
      * @param docName string representing document name
      * @returns true if string is a valid name.
      **/
     private boolean isValidDocumentName(String docName) {
-        return !docName.isEmpty();
+        //file name and suffix are all empty.
+        if(docName.isEmpty()) {
+            return false;
+        }
+
+        //file name and suffix are all space charactors.
+		String tmpStr = docName.toString();
+        tmpStr = tmpStr.replaceAll(" ", "");        
+        if(tmpStr.isEmpty()) {
+            return false;
+        }
+
+        //file name is empty or space.but suffix is not empty or space.
+        int index =  tmpStr.lastIndexOf(".");
+        if(index == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -191,14 +219,19 @@ public class RenameDocumentFragment extends DialogFragment {
             mDialog.dismiss();
         } else if (!isValidDocumentName(newDisplayName)) {
             Log.w(TAG, "Failed to rename file - invalid name:" + newDisplayName);
-            Snackbars.makeSnackbar(getActivity(), R.string.rename_error,
-                    Snackbar.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(activity , getContext().getString(R.string.rename_error_empty) , Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
         } else if (activity.getInjector().getModel().hasFileWithName(newDisplayName)){
             mRenameInputWrapper.setError(getContext().getString(R.string.name_conflict));
             selectFileName(mEditText);
             Metrics.logRenameFileError();
         } else {
             new RenameDocumentsTask(activity, newDisplayName).execute(mDocument);
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            activity.getInjector().selectionMgr.clearSelection();			
         }
 
     }
@@ -219,7 +252,7 @@ public class RenameDocumentFragment extends DialogFragment {
 
         @Override
         protected DocumentInfo doInBackground(DocumentInfo... document) {
-            assert(document.length == 1);
+            assert (document.length == 1);
 
             return mActivity.getInjector().actions.renameDocument(mNewDisplayName, document[0]);
         }
@@ -231,9 +264,6 @@ public class RenameDocumentFragment extends DialogFragment {
             } else {
                 Snackbars.showRenameFailed(mActivity);
                 Metrics.logRenameFileError();
-            }
-            if (mDialog != null) {
-                mDialog.dismiss();
             }
             mActivity.setPending(false);
         }

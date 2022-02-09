@@ -39,13 +39,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
+//import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -76,6 +80,7 @@ import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
 
+import com.android.documentsui.util.FormatUtils;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
@@ -90,6 +95,7 @@ public abstract class BaseActivity
     private static final String BENCHMARK_TESTING_PACKAGE = "com.android.documentsui.appperftests";
 
     protected SearchViewManager mSearchManager;
+    private SearchManagerListener mSearchListener;
     protected AppsRowManager mAppsRowManager;
     protected State mState;
 
@@ -109,6 +115,12 @@ public abstract class BaseActivity
     @LayoutRes
     private int mLayoutId;
 
+    private ImageView searchMenu;
+    private ImageView addMenu;
+    public ImageView settingMenu;
+
+    ViewGroup chipGroup;
+
     private RootsMonitor<BaseActivity> mRootsMonitor;
 
     private long mStartTime;
@@ -127,6 +139,8 @@ public abstract class BaseActivity
     protected abstract void onDirectoryCreated(DocumentInfo doc);
 
     public abstract Injector<?> getInjector();
+     CommandInterceptor cmdInterceptor;
+    EventHandler<String> queryInterceptor;
 
     @CallSuper
     @Override
@@ -164,8 +178,19 @@ public abstract class BaseActivity
                 Shared.findView(this, R.id.dropdown_breadcrumb, R.id.horizontal_breadcrumb);
         assert(breadcrumb != null);
 
+        searchMenu = findViewById(R.id.topbar_search);
+        addMenu = findViewById(R.id.topbar_add);
+
+        settingMenu = findViewById(R.id.topbar_menu);
+        settingMenu.setOnClickListener(v -> {
+            Log.e("jake", "click menu");
+            if(popupMenu == null){
+                showPopupMenu2(v);
+            }
+        });
+
         mNavigator = new NavigationViewManager(this, mDrawer, mState, this, breadcrumb);
-        SearchManagerListener searchListener = new SearchManagerListener() {
+        mSearchListener = new SearchManagerListener() {
             /**
              * Called when search results changed. Refreshes the content of the directory. It
              * doesn't refresh elements on the action bar. e.g. The current directory name displayed
@@ -215,8 +240,10 @@ public abstract class BaseActivity
                 final boolean isInitailSearch
                         = !TextUtils.isEmpty(mSearchManager.getCurrentSearch())
                         && TextUtils.isEmpty(mSearchManager.getSearchViewText());
+                Log.e("jake", "search 1111111111111");
                 if (hasFocus && (SearchFragment.get(getSupportFragmentManager()) == null)
                         && !isInitailSearch) {
+                    Log.e("jake", "222222222222");
                     SearchFragment.showFragment(getSupportFragmentManager(),
                             mSearchManager.getSearchViewText());
                 }
@@ -230,24 +257,25 @@ public abstract class BaseActivity
                 }
             }
         };
+        chipGroup = findViewById(R.id.search_chip_group);
 
         // "Commands" are meta input for controlling system behavior.
         // We piggy back on search input as it is the only text input
         // area in the app. But the functionality is independent
         // of "regular" search query processing.
-        final CommandInterceptor cmdInterceptor = new CommandInterceptor(mInjector.features);
+
+        cmdInterceptor = new CommandInterceptor(mInjector.features);
         cmdInterceptor.add(new CommandInterceptor.DumpRootsCacheHandler(this));
 
         // A tiny decorator that adds support for enabling CommandInterceptor
         // based on query input. It's sorta like CommandInterceptor, but its metaaahhh.
-        EventHandler<String> queryInterceptor =
-                CommandInterceptor.createDebugModeFlipper(
-                        mInjector.features,
-                        mInjector.debugHelper::toggleDebugMode,
-                        cmdInterceptor);
 
-        ViewGroup chipGroup = findViewById(R.id.search_chip_group);
-        mSearchManager = new SearchViewManager(searchListener, queryInterceptor,
+        queryInterceptor = CommandInterceptor.createDebugModeFlipper(
+                mInjector.features,
+                mInjector.debugHelper::toggleDebugMode,
+                cmdInterceptor);
+
+        mSearchManager = new SearchViewManager(mSearchListener, queryInterceptor,
                 chipGroup, icicle);
         // initialize the chip sets by accept mime types
         mSearchManager.initChipSets(mState.acceptMimes);
@@ -264,6 +292,17 @@ public abstract class BaseActivity
             mSearchManager.onSearchBarClicked();
             mNavigator.update();
         });
+//
+        searchMenu.setOnClickListener(v -> {
+            mSearchManager.onSearchBarClicked();
+             mNavigator.update();
+        });
+
+        addMenu.setOnClickListener(v -> {
+            getInjector().actions.showCreateDirectoryDialog();
+        });
+
+
 
         mSortController = SortController.create(this, mState.derivedMode, mState.sortModel);
 
@@ -275,6 +314,42 @@ public abstract class BaseActivity
 
         // Base classes must update result in their onCreate.
         setResult(AppCompatActivity.RESULT_CANCELED);
+    }
+
+    PopupMenu popupMenu;
+    private void showPopupMenu2(View view) {
+        popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.jake_test, popupMenu.getMenu());
+        MenuItem itemIcons = popupMenu.getMenu().findItem(R.id.memu_icons);
+        MenuItem itemList = popupMenu.getMenu().findItem(R.id.menu_list);
+        if(mState.derivedMode == State.MODE_GRID){
+            itemIcons.setEnabled(false);
+            itemList.setEnabled(true);
+        }else if (mState.derivedMode == State.MODE_LIST) {
+            itemIcons.setEnabled(true);
+            itemList.setEnabled(false);
+        }
+
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.memu_icons:
+                    setViewMode(State.MODE_GRID);
+                    break;
+                case R.id.menu_list:
+                    setViewMode(State.MODE_LIST);
+                    break;
+                case R.id.menu_select_all:
+                    getInjector().actions.selectAllFiles();
+                    break;
+            }
+            return true;
+        });
+        popupMenu.setOnDismissListener(menu -> {
+            // 控件消失时的事件
+            popupMenu = null ;
+        });
+
     }
 
     public void onPreferenceChanged(String pref) {
@@ -313,6 +388,14 @@ public abstract class BaseActivity
         boolean fullBarSearch = getResources().getBoolean(R.bool.full_bar_search_view);
         boolean showSearchBar = getResources().getBoolean(R.bool.show_search_bar);
         mSearchManager.install(menu, fullBarSearch, showSearchBar);
+
+        MenuItem item = menu.findItem(R.id.option_menu_grid_or_list);
+        if(mState.derivedMode == State.MODE_GRID){
+            item.setTitle(getResources().getString(R.string.menu_list));
+        }else if (mState.derivedMode == State.MODE_LIST) {
+            item.setTitle(getResources().getString(R.string.menu_grid));
+        }
+
 
         final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
         // If size is 0, it means the menu has not inflated and it should only do once.
@@ -361,11 +444,13 @@ public abstract class BaseActivity
 
         includeState(state);
 
-        state.showAdvanced = Shared.mustShowDeviceRoot(intent)
-                || mInjector.prefs.getShowDeviceRoot();
+//        state.showAdvanced = Shared.mustShowDeviceRoot(intent)
+//                || mInjector.prefs.getShowDeviceRoot();
 
         // Only show the toggle if advanced isn't forced enabled.
-        state.showDeviceStorageOption = !Shared.mustShowDeviceRoot(intent);
+//        state.showDeviceStorageOption = !Shared.mustShowDeviceRoot(intent);
+        state.showAdvanced = true ;
+        state.showDeviceStorageOption = false ;
 
         if (DEBUG) {
             Log.d(mTag, "Created new state object: " + state);
@@ -407,6 +492,14 @@ public abstract class BaseActivity
 
     @Override
     public void onRootPicked(RootInfo root) {
+
+        if(root.authority == null || root.authority.equals("com.android.providers.media.documents")
+                || root.authority.equals("com.android.providers.downloads.documents") || root.authority.equals("com.android.documentsui.fav")){
+            FormatUtils.canFav = false;
+        }else{
+            FormatUtils.canFav = true;
+        }
+
         // Clicking on the current root removes search
         mSearchManager.cancelSearch();
 
@@ -422,7 +515,7 @@ public abstract class BaseActivity
         // their docs.
         mState.sortModel.setDimensionVisibility(
                 SortModel.SORT_DIMENSION_ID_SUMMARY,
-                root.isRecents() || root.isDownloads() ? View.VISIBLE : View.INVISIBLE);
+                root.isRecents() || root.isDownloads() || root.isFav() || root.isDocs()? View.VISIBLE : View.INVISIBLE);
 
         // Clear entire backstack and start in new root
         mState.stack.changeRoot(root);
@@ -453,6 +546,21 @@ public abstract class BaseActivity
 
             case R.id.option_menu_create_dir:
                 getInjector().actions.showCreateDirectoryDialog();
+                return true;
+
+            case R.id.option_menu_grid_or_list:
+//                getInjector().actions.showCreateDirectoryDialog();
+                if(mState.derivedMode == State.MODE_GRID){
+                    setViewMode(State.MODE_LIST);
+                    item.setTitle(getResources().getString(R.string.menu_grid));
+                    Toast.makeText(BaseActivity.this , getResources().getString(R.string.menu_list) , Toast.LENGTH_SHORT).show();
+                }else if (mState.derivedMode == State.MODE_LIST) {
+                    setViewMode(State.MODE_GRID);
+                    item.setTitle(getResources().getString(R.string.menu_list));
+                    Toast.makeText(BaseActivity.this , getResources().getString(R.string.menu_grid) , Toast.LENGTH_SHORT).show();
+                }
+                refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
+
                 return true;
 
             case R.id.option_menu_search:
@@ -667,12 +775,14 @@ public abstract class BaseActivity
             case RootInfo.TYPE_RECENTS:
                 result = getHeaderRecentTitle();
                 break;
+            case RootInfo.TYPE_DOCS:
             case RootInfo.TYPE_IMAGES:
             case RootInfo.TYPE_VIDEO:
             case RootInfo.TYPE_AUDIO:
                 result = getString(R.string.root_info_header_media, rootTitle);
                 break;
             case RootInfo.TYPE_DOWNLOADS:
+            case RootInfo.TYPE_FAV:
             case RootInfo.TYPE_LOCAL:
             case RootInfo.TYPE_MTP:
             case RootInfo.TYPE_SD:
@@ -685,7 +795,8 @@ public abstract class BaseActivity
                 break;
         }
 
-        TextView headerTitle = findViewById(R.id.header_title);
+//        TextView headerTitle = findViewById(R.id.header_title);
+        TextView headerTitle = findViewById(R.id.topbar_title);
         headerTitle.setText(result);
     }
 

@@ -28,8 +28,10 @@ import androidx.recyclerview.selection.SelectionTracker.SelectionObserver;
 import com.android.documentsui.MenuManager;
 import com.android.documentsui.archives.ArchivesProvider;
 import com.android.documentsui.base.MimeTypes;
+import com.android.documentsui.queries.FavFileListDataManager;
 import com.android.documentsui.roots.RootCursorWrapper;
 
+import java.util.Vector;
 import java.util.function.Function;
 
 /**
@@ -58,9 +60,12 @@ public class SelectionMetadata extends SelectionObserver<String>
     private int mNoRenameCount = 0;
     private int mInArchiveCount = 0;
     private boolean mSupportsSettings = false;
+    private boolean mIsFavFile = false;//add by hjy
+    private Vector<String> mModeIdVector = null;//add by hjy
 
     public SelectionMetadata(Function<String, Cursor> docFinder) {
         mDocFinder = docFinder;
+        mModeIdVector = new Vector<>();
     }
 
     @Override
@@ -77,6 +82,12 @@ public class SelectionMetadata extends SelectionObserver<String>
         final String mimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
         if (MimeTypes.isDirectoryType(mimeType)) {
             mDirectoryCount += delta;
+            if(selected){
+                mModeIdVector.add(modelId);
+            }else{
+                mModeIdVector.remove(modelId);
+            }
+
         } else {
             mFileCount += delta;
         }
@@ -104,6 +115,17 @@ public class SelectionMetadata extends SelectionObserver<String>
         final String authority = getCursorString(cursor, RootCursorWrapper.COLUMN_AUTHORITY);
         if (ArchivesProvider.AUTHORITY.equals(authority)) {
             mInArchiveCount += delta;
+        }
+
+        if(mDirectoryCount == 1)
+        {
+            Cursor favCursor = mDocFinder.apply(mModeIdVector.get(0));
+//            Log.d("hjy", "mModeIdVector.get(0) == " + mModeIdVector.get(0));
+            String docId = getCursorString(favCursor, Document.COLUMN_DOCUMENT_ID);
+//            Log.d("hjy", "SelectionMetadata docId11 == " + docId);//primary:Download/Download
+            docId = docId.replace("primary:", "/storage/emulated/0/");
+//            Log.d("hjy", "SelectionMetadata docId22 == " + docId);
+            mIsFavFile = FavFileListDataManager.getInstance(null).isFav(docId);
         }
     }
 
@@ -160,6 +182,11 @@ public class SelectionMetadata extends SelectionObserver<String>
     @Override
     public boolean canViewInOwner() {
         return mSupportsSettings;
+    }
+
+    @Override
+    public boolean isFavFile() {
+        return mIsFavFile;
     }
 
     @Override

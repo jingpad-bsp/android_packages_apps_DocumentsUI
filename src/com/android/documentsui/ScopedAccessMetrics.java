@@ -23,6 +23,6 @@ public final class ScopedAccessMetrics {
     private static final String TAG = "ScopedAccessMetrics";
 
     public static void logInvalidScopedAccessRequest(@MetricConsts.InvalidScopedAccess int type) {
-        DocumentsStatsLog.write(DocumentsStatsLog.DOCS_UI_INVALID_SCOPED_ACCESS_REQUEST, type);
+//        DocumentsStatsLog.write(DocumentsStatsLog.DOCS_UI_INVALID_SCOPED_ACCESS_REQUEST, type);
     }
 }

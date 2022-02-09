@@ -332,7 +332,15 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
             // DirectoryFragment update UI.
             mActivity.refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
         } else {
-            openContainerDocument(rootDoc);
+            //openContainerDocument(rootDoc);
+            /*unisoc 1475290 fail to load root@{ */
+            try {
+                openContainerDocument(rootDoc);
+            } catch (RuntimeException exception) {
+                Log.e(TAG, "fail to load root!" + exception);
+                mActivity.refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
+            }
+            /* }@ */
         }
     }
 
@@ -406,6 +414,12 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         }
 
         assert(currentDoc != null);
+        /* unisoc bug1489848 doc maybe exist in monkey @{*/
+        if (currentDoc.equals(mState.stack.peek())) {
+            Log.w(TAG, "This DocumentInfo is already in current DocumentsStack");
+            return;
+        }
+        /* }@ */
         mActivity.notifyDirectoryNavigated(currentDoc.derivedUri);
 
         mState.stack.push(currentDoc);
@@ -658,6 +672,8 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         // TODO: Move this to PickAddons as multi-document picking is exclusive to that activity.
         void onDocumentsPicked(List<DocumentInfo> docs);
         void onDocumentPicked(DocumentInfo doc);
+        void onDirFaved(List<DocumentInfo> docs);
+        void onDirUnfaved(List<DocumentInfo> docs);
         RootInfo getCurrentRoot();
         DocumentInfo getCurrentDirectory();
         /**

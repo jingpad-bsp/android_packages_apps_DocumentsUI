@@ -16,6 +16,7 @@
 
 package com.android.documentsui.dirlist;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.recyclerview.selection.ItemDetailsLookup.ItemDetails;
@@ -54,7 +55,9 @@ public final class DocumentItemDetails extends ItemDetails<String> {
 
     @Override
     public boolean inSelectionHotspot(MotionEvent e) {
-        return mDocumentHolder.inSelectRegion(e);
+        Log.e("jake1", "click select.....");
+        return false ;
+//        return mDocumentHolder.inSelectRegion(e);
     }
 
     public boolean inPreviewIconHotspot(MotionEvent e) {

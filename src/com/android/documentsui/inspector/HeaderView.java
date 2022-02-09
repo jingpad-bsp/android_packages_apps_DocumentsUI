@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,6 +45,8 @@ import javax.annotation.Nullable;
  */
 public final class HeaderView extends RelativeLayout implements HeaderDisplay {
 
+    private static String TAG = "HeaderView";
+    private static final int MAX_BITMAP_SIZE = 100 * 1024 * 1024; // 100 MB
     private final Context mContext;
     private final View mHeader;
     private ImageView mThumbnail;
@@ -99,6 +102,12 @@ public final class HeaderView extends RelativeLayout implements HeaderDisplay {
      */
     private void showImage(DocumentInfo info, @Nullable Bitmap thumbnail) {
         if (thumbnail != null) {
+            if(thumbnail.getByteCount() > MAX_BITMAP_SIZE) {
+                mImageDimensions = new Point(mImageDimensions.x/2, mImageDimensions.y/2);
+                loadHeaderImage(info);
+                Log.d(TAG, "Get too large(" + thumbnail.getByteCount() + ") bitmap, try low sampling size");
+                return;
+            }
             mThumbnail.setScaleType(ScaleType.CENTER_CROP);
             mThumbnail.setImageBitmap(thumbnail);
         } else {

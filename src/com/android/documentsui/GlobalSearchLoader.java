@@ -72,7 +72,7 @@ public class GlobalSearchLoader extends MultiRootDocumentsLoader {
         // If the value of showAdvanced is true,
         // don't query media roots and downloads root to avoid showing
         // duplicated files.
-        if (mState.showAdvanced && (root.isLibrary() || root.isDownloads())) {
+        if (mState.showAdvanced && (root.isLibrary() || root.isDownloads() || root.isFav())) {
             return true;
         }
         return false;

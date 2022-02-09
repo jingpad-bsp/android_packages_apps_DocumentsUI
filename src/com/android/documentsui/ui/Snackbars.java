@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 
@@ -66,21 +67,26 @@ public final class Snackbars {
     }
 
     public static final void showOperationRejected(Activity activity) {
-        makeSnackbar(activity, R.string.file_operation_rejected, Snackbar.LENGTH_SHORT).show();
+//        makeSnackbar(activity, R.string.file_operation_rejected, Snackbar.LENGTH_SHORT).show();
+        Toast.makeText(activity, R.string.file_operation_rejected, Toast.LENGTH_SHORT).show();
+
     }
 
     public static final void showOperationFailed(Activity activity) {
-        makeSnackbar(activity, R.string.file_operation_error, Snackbar.LENGTH_SHORT).show();
+//        makeSnackbar(activity, R.string.file_operation_error, Snackbar.LENGTH_SHORT).show();
+        Toast.makeText(activity, R.string.file_operation_error, Toast.LENGTH_SHORT).show();
     }
 
     public static final void showRenameFailed(Activity activity) {
-        makeSnackbar(activity, R.string.rename_error, Snackbar.LENGTH_SHORT).show();
+//        makeSnackbar(activity, R.string.rename_error, Snackbar.LENGTH_SHORT).show();
+        Toast.makeText(activity, R.string.rename_error, Toast.LENGTH_SHORT).show();
     }
 
     public static final void showInspectorError(Activity activity) {
         //Document Inspector uses a different view from other files app activities.
-        final View view = activity.findViewById(R.id.inspector_root);
-        Snackbar.make(view, R.string.inspector_load_error, Snackbar.LENGTH_INDEFINITE).show();
+//        final View view = activity.findViewById(R.id.inspector_root);
+//        Snackbar.make(view, R.string.inspector_load_error, Snackbar.LENGTH_INDEFINITE).show();
+        Toast.makeText(activity, R.string.inspector_load_error, Toast.LENGTH_SHORT).show();
     }
 
     public static final void showCustomTextWithImage(Activity activity, String text, int imageRes) {

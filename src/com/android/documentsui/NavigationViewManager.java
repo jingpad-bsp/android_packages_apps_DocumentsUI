@@ -51,7 +51,8 @@ public class NavigationViewManager {
     private final State mState;
     private final NavigationViewManager.Environment mEnv;
     private final Breadcrumb mBreadcrumb;
-    private final View mSearchBarView;
+//    private final View mSearchBarView;
+    private final View mTopbar;
     private final CollapsingToolbarLayout mCollapsingBarLayout;
     private final Drawable mDefaultActionBarBackground;
     private final ViewOutlineProvider mSearchBarOutlineProvider;
@@ -78,7 +79,8 @@ public class NavigationViewManager {
                         onNavigationIconClicked();
                     }
                 });
-        mSearchBarView = activity.findViewById(R.id.searchbar_title);
+//        mSearchBarView = activity.findViewById(R.id.searchbar_title);
+        mTopbar = activity.findViewById(R.id.topbar_title);
         mCollapsingBarLayout = activity.findViewById(R.id.collapsing_toolbar);
         mDefaultActionBarBackground = mToolbar.getBackground();
         mShowSearchBar = activity.getResources().getBoolean(R.bool.show_search_bar);
@@ -99,7 +101,7 @@ public class NavigationViewManager {
     }
 
     public void setSearchBarClickListener(View.OnClickListener listener) {
-        mSearchBarView.setOnClickListener(listener);
+//        mSearchBarView.setOnClickListener(listener);
     }
 
     private void onNavigationIconClicked() {
@@ -138,17 +140,20 @@ public class NavigationViewManager {
         if (shouldShowSearchBar()) {
             mBreadcrumb.show(false);
             mToolbar.setTitle(null);
-            mSearchBarView.setVisibility(View.VISIBLE);
+//            mSearchBarView.setVisibility(View.VISIBLE);
+            mTopbar.setVisibility(View.VISIBLE);
         } else if (mState.stack.size() <= 1) {
             mBreadcrumb.show(false);
-            mSearchBarView.setVisibility(View.GONE);
+//            mSearchBarView.setVisibility(View.VISIBLE);
+            mTopbar.setVisibility(View.VISIBLE);
             String title = mEnv.getCurrentRoot().title;
             if (VERBOSE) Log.v(TAG, "New toolbar title is: " + title);
             mToolbar.setTitle(title);
         } else {
             mBreadcrumb.show(true);
             mToolbar.setTitle(null);
-            mSearchBarView.setVisibility(View.GONE);
+//            mSearchBarView.setVisibility(View.GONE);
+            mTopbar.setVisibility(View.GONE);
             mBreadcrumb.postUpdate();
         }
     }

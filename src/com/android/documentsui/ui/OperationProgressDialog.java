@@ -53,12 +53,12 @@ public class OperationProgressDialog {
                 activity.getString(android.R.string.cancel),
                 (dialog, button) -> {
                     FileOperations.cancel(mActivity, mJobId);
-                    mDialog.dismiss();
+                    dismiss();
                 });
 
         mDialog.setButton(ProgressDialog.BUTTON_NEUTRAL,
                 activity.getString(R.string.continue_in_background),
-                (dialog, button) -> mDialog.dismiss());
+                (dialog, button) -> dismiss());
 
         operation.addMessageListener(new Handler.Callback() {
             @Override
@@ -76,7 +76,7 @@ public class OperationProgressDialog {
                         return true;
                     case FileOperationService.MESSAGE_FINISH:
                         operation.removeMessageListener(this);
-                        mDialog.dismiss();
+                        dismiss();
                         return true;
                 }
                 return false;
@@ -114,7 +114,13 @@ public class OperationProgressDialog {
     }
 
     public void dismiss() {
-        mDialog.dismiss();
+        /*unisoc bug 1367878 check dialog and activity status before dismis it @{*/
+        if (mDialog != null) {
+            if (mActivity != null && !mActivity.isDestroyed()) {
+                mDialog.dismiss();
+            }
+        }
+        /*}@*/
     }
 
     public void show() {

@@ -55,6 +55,8 @@ public class ActionModeController extends SelectionObserver<String>
     private final ContentScope mScope = new ContentScope();
     private final MutableSelection<String> mSelected = new MutableSelection<>();
 
+    private long mLastClickTime = 0;
+
     private @Nullable ActionMode mActionMode;
     private @Nullable Menu mMenu;
 
@@ -166,6 +168,12 @@ public class ActionModeController extends SelectionObserver<String>
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        long nowTime = System.currentTimeMillis();
+        if(nowTime > mLastClickTime && nowTime - mLastClickTime < 1000) {
+            Log.d(TAG, "Ignore multiple quick clicks");
+            return true;
+        }
+        mLastClickTime = nowTime;
         return mScope.menuItemClicker.accept(item);
     }
 

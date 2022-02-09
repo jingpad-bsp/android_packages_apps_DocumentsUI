@@ -238,6 +238,12 @@ public class RootsFragment extends Fragment {
                     return;
                 }
 
+                for (RootInfo info : roots){
+                    if (info.isNativeFolder()) {
+                        info.title = getResources().getString(R.string.root_type_local);
+                    }
+                }
+
                 Intent handlerAppIntent = getArguments().getParcelable(EXTRA_INCLUDE_APPS);
 
                 final Intent intent = activity.getIntent();
@@ -246,6 +252,7 @@ public class RootsFragment extends Fragment {
                 final String excludePackage = excludeSelf ? activity.getCallingPackage() : null;
                 List<Item> sortedItems = sortLoadResult(roots, excludePackage, handlerAppIntent,
                         DocumentsApplication.getProvidersCache(getContext()));
+
                 mAdapter = new RootsAdapter(activity, sortedItems, mDragListener);
                 mList.setAdapter(mAdapter);
 
@@ -285,17 +292,24 @@ public class RootsFragment extends Fragment {
         for (final RootInfo root : roots) {
             final RootItem item;
 
-            if (root.isExternalStorageHome() && !Shared.shouldShowDocumentsRoot(getContext())) {
-                continue;
-            } else if (root.isLibrary() || root.isDownloads()) {
+            Log.e("jake", "root type is "+  root.title + root.derivedType);
+            //
+             if ( root.isExternalStorageHome() && !Shared.shouldShowDocumentsRoot(getContext())) {
+                  Log.e("jake", root.title+"被排除");
+                 continue;
+             } else
+            if (root.isLibrary() || root.isDownloads() || root.isDocs()) {
                 item = new RootItem(root, mActionHandler);
+                 Log.e("jake", "item is library");
                 libraries.add(item);
-            } else if (root.isStorage()) {
+            } else if (root.isStorage() || root.isFav()) {
                 item = new RootItem(root, mActionHandler);
+                Log.e("jake", "item is storage");
                 storageProviders.add(item);
             } else {
                 item = new RootItem(root, mActionHandler,
                         providersAccess.getPackageName(root.authority));
+                Log.e("jake", "item is otherProviders");
                 otherProviders.add(item);
             }
         }
@@ -304,12 +318,21 @@ public class RootsFragment extends Fragment {
         Collections.sort(libraries, comp);
         Collections.sort(storageProviders, comp);
 
+        if (libraries.size() > 0) {
+            SpacerItem item1 = new SpacerItem();
+            item1.setTitle(getResources().getString(R.string.sort_dimension_file_type));
+            result.add(item1);
+        }
+
+
         if (VERBOSE) Log.v(TAG, "Adding library roots: " + libraries);
         result.addAll(libraries);
 
         // Only add the spacer if it is actually separating something.
         if (!result.isEmpty() && !storageProviders.isEmpty()) {
-            result.add(new SpacerItem());
+            SpacerItem item2 = new SpacerItem();
+            item2.setTitle(getResources().getString(R.string.root_type_other));
+            result.add(item2);
         }
         if (VERBOSE) Log.v(TAG, "Adding storage roots: " + storageProviders);
         result.addAll(storageProviders);
@@ -321,15 +344,15 @@ public class RootsFragment extends Fragment {
             // Only add providers
             Collections.sort(otherProviders, comp);
             if (!result.isEmpty() && !otherProviders.isEmpty()) {
-                result.add(new SpacerItem());
+                // result.add(new SpacerItem());
             }
             if (VERBOSE) Log.v(TAG, "Adding plain roots: " + otherProviders);
-            result.addAll(otherProviders);
+//             result.addAll(otherProviders);
 
             mApplicationItemList = new ArrayList<>();
-            for (Item item : otherProviders) {
-                mApplicationItemList.add(item);
-            }
+//            for (Item item : otherProviders) {
+//                mApplicationItemList.add(item);
+//            }
         }
 
         return result;
@@ -393,7 +416,7 @@ public class RootsFragment extends Fragment {
         rootList.addAll(appItems.values());
 
         if (!result.isEmpty() && !rootList.isEmpty()) {
-            result.add(new SpacerItem());
+//            result.add(new SpacerItem());
         }
 
         final String preferredRootPackage = getResources().getString(
@@ -401,13 +424,13 @@ public class RootsFragment extends Fragment {
 
         final ItemComparator comp = new ItemComparator(preferredRootPackage);
         Collections.sort(rootList, comp);
-        result.addAll(rootList);
+//        result.addAll(rootList);
 
         mApplicationItemList = rootList;
 
         if (profileItem != null) {
-            result.add(new SpacerItem());
-            result.add(profileItem);
+//            result.add(new SpacerItem());
+//            result.add(profileItem);
         }
     }
 
@@ -490,6 +513,7 @@ public class RootsFragment extends Fragment {
                 ejectClicked(ejectIcon, rootItem.root, mActionHandler);
                 return true;
             case R.id.root_menu_open_in_new_window:
+                Log.e("jake", "RootsFragemnt , open in new window");
                 mActionHandler.openInNewWindow(new DocumentStack(rootItem.root));
                 return true;
             case R.id.root_menu_paste_into_folder:

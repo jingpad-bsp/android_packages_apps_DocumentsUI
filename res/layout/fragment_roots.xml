@@ -14,10 +14,29 @@
      limitations under the License.
 -->
 
-<com.android.documentsui.sidebar.RootsList xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/roots_list"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="8dp"
-    android:keyboardNavigationCluster="true"
-    android:divider="@null"/>
+    android:background="@color/sider_root_background"
+    android:orientation="vertical"
+    >
+<!--    android:background="#FFF4F7FB"-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/files_label"
+        android:textSize="28sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="30dp"
+        />
+
+    <com.android.documentsui.sidebar.RootsList
+        android:id="@+id/roots_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:paddingTop="8dp"
+        android:keyboardNavigationCluster="true"
+        android:divider="@null"/>
+</LinearLayout>

@@ -358,6 +358,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                             .withOnItemActivatedListener(this::onItemActivated)
                             .withOperationMonitor(mContentLock.getMonitor())
                             .withSelectionPredicate(selectionPredicate)
+                            .withGestureTooltypes(MotionEvent.TOOL_TYPE_FINGER,
+                                    MotionEvent.TOOL_TYPE_STYLUS)
                             .build();
             mInjector.updateSharedSelectionTracker(localTracker);
         }
@@ -545,12 +547,20 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private int getAppBarLayoutHeight() {
+        if(getActivity() == null) {
+            return 0;
+        }
+
         View appBarLayout = getActivity().findViewById(R.id.app_bar);
         View collapsingBar = getActivity().findViewById(R.id.collapsing_toolbar);
         return collapsingBar == null ? 0 : appBarLayout.getHeight();
     }
 
     private int getSaveLayoutHeight() {
+        if(getActivity() == null) {
+            return 0;
+        }
+
         View containerSave = getActivity().findViewById(R.id.container_save);
         return containerSave == null ? 0 : containerSave.getHeight();
     }
@@ -662,6 +672,15 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             case R.id.action_menu_share:
             case R.id.dir_menu_share:
                 mActions.shareSelectedDocuments();
+                return true;
+
+            case R.id.action_menu_fav://add by hjy
+                mActivity.onDirFaved(mModel.getDocuments(selection));//FilesActivity onDirFaved
+                mActionModeController.finishActionMode();
+                return true;
+            case R.id.action_menu_unfav://add by hjy
+                mActivity.onDirUnfaved(mModel.getDocuments(selection));
+                mActionModeController.finishActionMode();
                 return true;
 
             case R.id.action_menu_delete:
@@ -817,6 +836,17 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 DocumentInfo.fromDirectoryCursor(mModel.getItem(selected.iterator().next()));
         mActions.showChooserForDoc(doc);
     }
+
+    //add by hjy start
+    private void addToFav(final Selection selected) {
+        List<DocumentInfo> docs = mModel.getDocuments(selected);
+        if (docs.size() > 1) {
+            mActivity.onDocumentsPicked(docs);
+        } else {
+            mActivity.onDocumentPicked(docs.get(0));
+        }
+    }
+    //add by hjy end
 
     private void transferDocuments(
             final Selection<String> selected, @Nullable DocumentStack destination,

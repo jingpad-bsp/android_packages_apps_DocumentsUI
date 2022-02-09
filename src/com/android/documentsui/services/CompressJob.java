@@ -42,13 +42,14 @@ import com.android.documentsui.clipping.UrisSupplier;
 import java.io.FileNotFoundException;
 
 import javax.annotation.Nullable;
+import static android.content.ContentResolver.wrap;
 
 // TODO: Stop extending CopyJob.
 final class CompressJob extends CopyJob {
 
     private static final String TAG = "CompressJob";
     private static final String NEW_ARCHIVE_EXTENSION = ".zip";
-
+    private Uri mArchiveUri;
     /**
      * Moves files to a destination identified by {@code destination}.
      * Performs most work by delegating to CopyJob, then deleting
@@ -103,17 +104,16 @@ final class CompressJob extends CopyJob {
             displayName = service.getString(R.string.new_archive_file_name, NEW_ARCHIVE_EXTENSION);
         }
 
-        Uri archiveUri;
         try {
-            archiveUri = DocumentsContract.createDocument(
+            mArchiveUri = DocumentsContract.createDocument(
                 resolver, mDstInfo.derivedUri, "application/zip", displayName);
         } catch (Exception e) {
-            archiveUri = null;
+            mArchiveUri = null;
         }
 
         try {
             mDstInfo = DocumentInfo.fromUri(resolver, ArchivesProvider.buildUriForArchive(
-                    archiveUri, ParcelFileDescriptor.MODE_WRITE_ONLY));
+                    mArchiveUri, ParcelFileDescriptor.MODE_WRITE_ONLY));
             ArchivesProvider.acquireArchive(getClient(mDstInfo), mDstInfo.derivedUri);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to create dstInfo.", e);
@@ -137,6 +137,15 @@ final class CompressJob extends CopyJob {
         }
 
         // TODO: Remove the archive file in case of an error.
+        /*unisoc 1482646 Delete the generated file after the operation is over @{*/
+        try {
+            if (!isFinished() || isCanceled()) {
+                DocumentsContract.deleteDocument(wrap(getClient(mArchiveUri)), mArchiveUri);
+            }
+        } catch (RemoteException | FileNotFoundException e) {
+            Log.w(TAG, "Failed to cleanup after compress error: " + mDstInfo.toString(), e);
+        }
+        /* }@ */
 
         super.finish();
     }

@@ -13,64 +13,89 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
+<!-- hjy 编辑态 ...的点击菜单 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_menu_open_with"
-        android:title="@string/menu_open_with"
-        android:showAsAction="never" />
+
     <item
         android:id="@+id/action_menu_share"
-        android:icon="@drawable/ic_menu_share"
         android:title="@string/menu_share"
         android:showAsAction="always" />
+    <!--    android:icon="@drawable/ic_menu_share"-->
+
     <item
-        android:id="@+id/action_menu_delete"
-        android:icon="@drawable/ic_menu_delete"
-        android:title="@string/menu_delete"
+        android:id="@+id/action_menu_fav"
+        android:title="@string/menu_fav"
         android:showAsAction="always" />
+
     <item
-        android:id="@+id/action_menu_sort"
-        android:title="@string/menu_sort"
-        android:showAsAction="never" />
-    <item
-        android:id="@+id/action_menu_select"
-        android:title="@string/menu_select"
+        android:id="@+id/action_menu_unfav"
+        android:title="@string/menu_unfav"
         android:showAsAction="always" />
+
+
     <item
         android:id="@+id/action_menu_select_all"
         android:title="@string/menu_select_all"
         android:showAsAction="never" />
+<!--            android:showAsAction="never" />-->
+
+    <item
+        android:id="@+id/action_menu_delete"
+        android:title="@string/menu_delete"
+        android:showAsAction="always" />
+    <!--    android:icon="@drawable/ic_menu_delete"-->
+
     <item
         android:id="@+id/action_menu_copy_to"
         android:title="@string/menu_copy"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:visible="false" />
-    <item
-        android:id="@+id/action_menu_extract_to"
-        android:title="@string/menu_extract"
-        android:showAsAction="never"
-        android:visible="false" />
+
     <item
         android:id="@+id/action_menu_move_to"
         android:title="@string/menu_move"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:visible="false" />
+
     <item
         android:id="@+id/action_menu_compress"
         android:title="@string/menu_compress"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:visible="false" />
+
+    <item
+        android:id="@+id/action_menu_extract_to"
+        android:title="@string/menu_extract"
+        android:showAsAction="always"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_menu_select"
+        android:title="@string/menu_select"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_menu_open_with"
+        android:title="@string/menu_open_with"
+        android:showAsAction="never" />
+
     <item
         android:id="@+id/action_menu_rename"
         android:title="@string/menu_rename"
         android:showAsAction="never"
         android:visible="false" />
+
     <item
         android:id="@+id/action_menu_inspect"
         android:title="@string/menu_inspect"
         android:showAsAction="never"
         android:visible="false" />
+
+    <item
+        android:id="@+id/action_menu_sort"
+        android:title="@string/menu_sort"
+        android:showAsAction="never" />
+
     <item
         android:id="@+id/action_menu_view_in_owner"
         android:title="@string/menu_view_in_owner"

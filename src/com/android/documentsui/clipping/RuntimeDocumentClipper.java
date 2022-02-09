@@ -267,6 +267,8 @@ final class RuntimeDocumentClipper implements DocumentClipper {
         }
 
         PersistableBundle bundle = clipData.getDescription().getExtras();
+        //修复bug1863 zzc
+        if(bundle == null) return;
         @OpType int opType = getOpType(bundle);
         try {
             if (!canCopy(dstStack.peek())) {

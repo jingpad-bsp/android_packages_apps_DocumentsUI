@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2018 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2018 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,44 +13,96 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/action_bar_space_margin"
     android:orientation="vertical">
+    <!--
+         android:layout_marginTop="@dimen/action_bar_space_margin"
+         android:visibility="gone" -->
 
     <!-- used for search chip. -->
-    <include layout="@layout/search_chip_row"/>
+    <!-- 图片 音频 视频 文档 -->
+    <include
+        layout="@layout/search_chip_row"
+
+        />
+<!--    android:visibility="gone"-->
 
     <!-- used for apps row. -->
-    <include layout="@layout/apps_row"/>
+    <include layout="@layout/apps_row"
 
+        />
+
+    <!-- list / grid -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/root_info_header_horizontal_padding"
         android:layout_marginEnd="@dimen/root_info_header_horizontal_padding"
+        android:visibility="gone"
         android:minHeight="@dimen/root_info_header_height">
 
         <TextView
-            android:id="@+id/header_title"
+            android:id="@+id/topbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textSize="16sp" />
+
+        <com.android.documentsui.HorizontalBreadcrumb
+            android:id="@+id/horizontal_breadcrumb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="start|center_vertical"
+            android:visibility="gone" />
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textAppearance="@style/SortTitle"
-            android:textAllCaps="true"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"/>
+            android:layout_weight="1" />
+        <!-- android:layout_marginRight="22dp" -->
 
         <androidx.appcompat.widget.ActionMenuView
             android:id="@+id/sub_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"/>
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/topbar_search"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_menu_search"
+            app:actionViewClass="android.widget.SearchView"
+            app:showAsAction="ifRoom|collapseActionView" />
+
+        <ImageView
+            android:id="@+id/topbar_add"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_topbar_add" />
+
+        <ImageView
+            android:id="@+id/topbar_menu"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_topbar_menu" />
 
     </LinearLayout>
 
     <!-- column headers are empty on small screens, in portrait or in grid mode. -->
-    <include layout="@layout/column_headers"/>
+    <include layout="@layout/column_headers" />
 
 </LinearLayout>

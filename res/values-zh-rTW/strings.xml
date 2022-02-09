@@ -22,6 +22,7 @@
     <skip />
     <!-- no translation found for launcher_label (799410258349837668) -->
     <skip />
+    <string name="length_limited">已達到最大長度</string>
     <string name="title_open" msgid="3165686459158020921">"在以下位置開啟檔案"</string>
     <string name="title_save" msgid="4384490653102710025">"儲存至"</string>
     <string name="menu_create_dir" msgid="2413624798689091042">"新資料夾"</string>
@@ -180,6 +181,7 @@
     <string name="file_operation_rejected" msgid="4301554203329008794">"不支援的檔案操作。"</string>
     <string name="file_operation_error" msgid="2234357335716533795">"檔案操作失敗。"</string>
     <string name="rename_error" msgid="6700093173508118635">"無法重新命名文件"</string>
+    <string name="rename_error_empty">"文件名或文件夹名不能为空!"</string>
     <string name="menu_eject_root" msgid="9215040039374893613">"退出"</string>
     <string name="notification_copy_files_converted_title" msgid="6916768494891833365">"部分檔案已轉換成其他格式"</string>
     <string name="open_external_dialog_request" msgid="8173558471322861268">"要允許<xliff:g id="APPNAME"><b>^1</b></xliff:g>存取 <xliff:g id="STORAGE"><i>^3</i></xliff:g>上的「<xliff:g id="DIRECTORY"><i>^2</i></xliff:g>」目錄嗎？"</string>

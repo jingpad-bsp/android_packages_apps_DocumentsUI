@@ -20,7 +20,8 @@
 
     <dimen name="grid_container_padding">20dp</dimen>
     <dimen name="list_container_padding">0dp</dimen>
-    <dimen name="icon_size">40dp</dimen>
+    <dimen name="icon_size">20dp</dimen>
+    <dimen name="preview_icon_size">60dp</dimen>
     <dimen name="button_touch_size">48dp</dimen>
     <dimen name="root_icon_size">24dp</dimen>
     <dimen name="root_icon_margin">0dp</dimen>
@@ -34,7 +35,7 @@
     <dimen name="progress_bar_height">4dp</dimen>
     <fraction name="grid_scale_min">85%</fraction>
     <fraction name="grid_scale_max">200%</fraction>
-    <dimen name="grid_width">152dp</dimen>
+    <dimen name="grid_width">142dp</dimen>
     <dimen name="grid_section_separator_height">0dp</dimen>
     <dimen name="grid_item_margin">6dp</dimen>
     <dimen name="grid_padding_horiz">4dp</dimen>

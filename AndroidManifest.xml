@@ -27,12 +27,19 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CHANGE_OVERLAY_PACKAGES" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!--    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />-->
+<!--    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />-->
+
+
     <application
         android:name=".DocumentsApplication"
         android:label="@string/app_label"
         android:icon="@drawable/app_icon"
         android:supportsRtl="true"
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:backupAgent=".prefs.BackupAgent"
         android:fullBackupOnly="false">
 
@@ -154,6 +161,34 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
+
+    <!-- add by hjy stary -->
+        <provider
+            android:name=".archives.FavProvider"
+            android:authorities="com.android.documentsui.fav"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+
+            <path-permission
+                android:path="/mnt/"
+                android:permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </provider>
+
+        <provider
+                    android:name="androidx.core.content.FileProvider"
+                   android:authorities="com.android.documentsui"
+                   android:grantUriPermissions="true"
+                   android:exported="false">
+                   <meta-data
+                       android:name="android.support.FILE_PROVIDER_PATHS"
+                       android:resource="@xml/file_paths" />
+        </provider>
+    <!--  add by hjy end  -->
+
 
         <receiver android:name=".PackageReceiver">
             <intent-filter>

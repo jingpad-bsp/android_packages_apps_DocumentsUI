@@ -26,13 +26,13 @@
     android:id="@+id/item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
+    android:layout_margin="1dp"
     android:focusable="true">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
+        android:layout_margin="1dp"
         android:elevation="0dp"
         android:duplicateParentState="true"
         app:cardElevation="0dp"
@@ -64,8 +64,8 @@
 
                 <com.android.documentsui.GridItemThumbnail
                     android:id="@+id/icon_mime_lg"
-                    android:layout_width="@dimen/icon_size"
-                    android:layout_height="@dimen/icon_size"
+                    android:layout_width="@dimen/preview_icon_size"
+                    android:layout_height="@dimen/preview_icon_size"
                     android:layout_gravity="center"
                     android:scaleType="fitCenter"
                     android:contentDescription="@null"/>
@@ -120,7 +120,7 @@
                         android:layout_width="@dimen/grid_item_icon_size"
                         android:layout_height="@dimen/grid_item_icon_size"
                         android:layout_gravity="center"
-                        android:scaleType="center"
+                        android:scaleType="centerInside"
                         android:contentDescription="@null"/>
 
                     <ImageView

@@ -21,4 +21,6 @@
     <color name="primary">#8AB4F8</color>
     <color name="secondary">#3D8AB4F8</color>
     <color name="hairline">#5F6368</color>
+    
+    <color name="sider_root_background">#3C4043</color>
 </resources>

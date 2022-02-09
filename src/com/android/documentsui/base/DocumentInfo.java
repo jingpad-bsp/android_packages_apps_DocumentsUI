@@ -215,7 +215,8 @@ public class DocumentInfo implements Durable, Parcelable {
     @Override
     public String toString() {
         return "DocumentInfo{"
-                + "docId=" + documentId
+                + "authority=" + authority
+                + ", docId=" + documentId
                 + ", name=" + displayName
                 + ", mimeType=" + mimeType
                 + ", isContainer=" + isContainer()
@@ -230,7 +231,7 @@ public class DocumentInfo implements Durable, Parcelable {
                 + ", isRenameSupported=" + isRenameSupported()
                 + ", isMetadataSupported=" + isMetadataSupported()
                 + "} @ "
-                + derivedUri;
+                + "uri == " + derivedUri;
     }
 
     public boolean isCreateSupported() {
@@ -328,9 +329,11 @@ public class DocumentInfo implements Durable, Parcelable {
     }
 
     public static String getCursorString(Cursor cursor, String columnName) {
-        if (cursor == null) {
+        /*unisoc bug 1355795 check if cursor's closed before getString @{*/
+        if (cursor == null || cursor.isClosed()) {
             return null;
         }
+        /*}@*/
         final int index = cursor.getColumnIndex(columnName);
         return (index != -1) ? cursor.getString(index) : null;
     }

@@ -62,7 +62,7 @@ public class LoadRootTask<T extends Activity & CommonAddons>
             mOwner.onRootPicked(root);
         } else {
             Log.w(TAG, "Failed to find root: " + mRootUri);
-            mOwner.finish();
+            mOwner.finishAndRemoveTask();
         }
     }
 

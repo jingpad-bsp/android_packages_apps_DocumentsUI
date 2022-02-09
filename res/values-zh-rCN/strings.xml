@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--  Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,13 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="files_label" msgid="771781190045103748">"文件"</string>
+    <string name="files_label" msgid="771781190045103748">"鲸鲮文件"</string>
     <string name="downloads_label" msgid="5462789470049501103">"下载"</string>
     <!-- no translation found for app_label (8089292432455111409) -->
     <skip />
     <!-- no translation found for launcher_label (799410258349837668) -->
     <skip />
+    <string name="length_limited">已达到最大长度</string>
     <string name="title_open" msgid="3165686459158020921">"打开文档"</string>
     <string name="title_save" msgid="4384490653102710025">"保存文档"</string>
     <string name="menu_create_dir" msgid="2413624798689091042">"新建文件夹"</string>
@@ -34,6 +35,8 @@
     <string name="menu_open_in_new_window" msgid="6686563636123311276">"在新窗口中打开"</string>
     <string name="menu_save" msgid="5195367497138965168">"保存"</string>
     <string name="menu_share" msgid="4307140947108068356">"分享"</string>
+    <string name="menu_fav">收藏</string>
+    <string name="menu_unfav">取消收藏</string>
     <string name="menu_delete" msgid="1022254131543256626">"删除"</string>
     <string name="menu_select_all" msgid="7600576812185570403">"全选"</string>
     <string name="menu_select" msgid="1366061076507142387">"选择"</string>
@@ -53,7 +56,7 @@
     <string name="menu_advanced_show" msgid="7558626506462906726">"显示内部存储空间"</string>
     <string name="menu_advanced_hide" msgid="6488381508009246334">"隐藏内部存储空间"</string>
     <string name="button_select" msgid="240863497069321364">"选择"</string>
-    <string name="button_copy" msgid="8219059853840996027">"复制"</string>
+    <string name="button_copy" msgid="8219059853840996027">"粘贴"</string>
     <string name="button_compress" msgid="8951561310857223966">"压缩"</string>
     <string name="button_extract" msgid="1038674453689912247">"解压"</string>
     <string name="button_move" msgid="8596460499325291272">"移动"</string>
@@ -180,6 +183,7 @@
     <string name="file_operation_rejected" msgid="4301554203329008794">"不支持文件操作。"</string>
     <string name="file_operation_error" msgid="2234357335716533795">"文件操作失败。"</string>
     <string name="rename_error" msgid="6700093173508118635">"无法重命名文档"</string>
+    <string name="rename_error_empty">"文件名或文件夹名不能为空!"</string>
     <string name="menu_eject_root" msgid="9215040039374893613">"退出"</string>
     <string name="notification_copy_files_converted_title" msgid="6916768494891833365">"部分文件已转换成其他格式"</string>
     <string name="open_external_dialog_request" msgid="8173558471322861268">"要授权<xliff:g id="APPNAME"><b>^1</b></xliff:g>访问<xliff:g id="STORAGE"><i>^3</i></xliff:g>上的“<xliff:g id="DIRECTORY"><i>^2</i></xliff:g>”目录吗？"</string>
@@ -247,4 +251,6 @@
     <string name="open_tree_dialog_message" msgid="8545093618524340168">"它将允许“<xliff:g id="APPNAME">%1$s</xliff:g>”拥有对以下内容的完整访问权限：目前存储在此位置下的所有文件，以及日后存储在此处的任何内容。"</string>
     <string name="search_bar_hint" msgid="4517366509897977321">"搜索此手机"</string>
     <string name="delete_search_history" msgid="2202015025607694515">"删除搜索记录“<xliff:g id="TEXT">%1$s</xliff:g>”"</string>
+    <string name="root_type_other">其他</string>
+    <string name="root_type_local">本地</string>
 </resources>

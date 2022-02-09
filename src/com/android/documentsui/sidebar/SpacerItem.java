@@ -20,6 +20,7 @@ import static com.android.documentsui.base.SharedMinimal.DEBUG;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.documentsui.R;
 
@@ -31,6 +32,9 @@ class SpacerItem extends Item {
 
     private static final String STRING_ID = "SpacerItem";
 
+    TextView mTitle;
+    String title;
+
     public SpacerItem() {
         // Multiple spacer items can share the same string id as they're identical.
         super(R.layout.item_root_spacer, "" /* title */, STRING_ID);
@@ -39,6 +43,15 @@ class SpacerItem extends Item {
     @Override
     void bindView(View convertView) {
         // Nothing to bind
+        mTitle = (TextView)convertView.findViewById(R.id.spacer_title);
+         if(mTitle != null && title != null  ){
+            mTitle.setText(title);
+        }
+
+    }
+
+    public void setTitle(String name) {
+        this.title = name ;
     }
 
     @Override

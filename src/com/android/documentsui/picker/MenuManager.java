@@ -108,6 +108,11 @@ public final class MenuManager extends com.android.documentsui.MenuManager {
     }
 
     @Override
+    protected void updateGridOrList(MenuItem gridOrList) {
+
+    }
+
+    @Override
     protected void updateSelect(MenuItem select, SelectionDetails selectionDetails) {
         select.setVisible(mState.action == ACTION_GET_CONTENT
                 || mState.action == ACTION_OPEN);

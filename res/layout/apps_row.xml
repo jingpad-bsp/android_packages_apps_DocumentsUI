@@ -19,6 +19,7 @@
     android:id="@+id/apps_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:visibility="gone"
     android:orientation="vertical">
 
     <TextView
@@ -29,12 +30,14 @@
         android:textAppearance="@style/SortTitle"
         android:text="@string/apps_row_title"
         android:textAllCaps="true"
+        android:visibility="gone"
         android:gravity="center"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
+        android:visibility="gone"
         android:scrollbars="none">
         <LinearLayout
             android:id="@+id/apps_group"

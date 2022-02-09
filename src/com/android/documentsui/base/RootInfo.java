@@ -26,6 +26,7 @@ import static com.android.documentsui.base.Shared.compareToIgnoreCaseNullable;
 
 import androidx.annotation.IntDef;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -34,6 +35,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Root;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,6 +44,7 @@ import com.android.documentsui.R;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,6 +65,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
     // The values of these constants determine the sort order of various roots in the RootsFragment.
     @IntDef(flag = false, value = {
             TYPE_RECENTS,
+            TYPE_DOCS,
             TYPE_IMAGES,
             TYPE_VIDEO,
             TYPE_AUDIO,
@@ -70,11 +74,13 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
             TYPE_MTP,
             TYPE_SD,
             TYPE_USB,
-            TYPE_OTHER
+            TYPE_OTHER,
+            TYPE_FAV
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RootType {}
-    public static final int TYPE_RECENTS = 1;
+    public static final int TYPE_RECENTS = 0;
+    public static final int TYPE_DOCS = 1;
     public static final int TYPE_IMAGES = 2;
     public static final int TYPE_VIDEO = 3;
     public static final int TYPE_AUDIO = 4;
@@ -84,6 +90,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
     public static final int TYPE_SD = 8;
     public static final int TYPE_USB = 9;
     public static final int TYPE_OTHER = 10;
+    public static final int TYPE_FAV = 11;
 
     public String authority;
     public String rootId;
@@ -95,6 +102,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
     public long availableBytes;
     public String mimeTypes;
     public String queryArgs;
+    public File path; //add by hjy
 
     /** Derived fields that aren't persisted */
     public String[] derivedMimeTypes;
@@ -125,6 +133,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         derivedMimeTypes = null;
         derivedIcon = 0;
         derivedType = 0;
+        path = null;
     }
 
     @Override
@@ -213,20 +222,29 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
             derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
         } else if (isMtp()) {
             derivedType = TYPE_MTP;
-            derivedIcon = R.drawable.ic_usb_storage;
+//            derivedIcon = R.drawable.ic_usb_storage;
+            derivedIcon = R.drawable.ic_sd_storage_n;
         } else if (isUsb()) {
             derivedType = TYPE_USB;
-            derivedIcon = R.drawable.ic_usb_storage;
+//            derivedIcon = R.drawable.ic_usb_storage;
+            derivedIcon = R.drawable.ic_sd_storage_n;
         } else if (isSd()) {
             derivedType = TYPE_SD;
-            derivedIcon = R.drawable.ic_sd_storage;
+            derivedIcon = R.drawable.ic_sd_storage_n;
         } else if (isExternalStorage()) {
             derivedType = TYPE_LOCAL;
-            derivedIcon = R.drawable.ic_root_smartphone;
+            derivedIcon = R.drawable.ic_root_local_n;
         } else if (isDownloads()) {
             derivedType = TYPE_DOWNLOADS;
-            derivedIcon = R.drawable.ic_root_download;
-        } else if (isImages()) {
+            derivedIcon = R.drawable.ic_root_download_n;
+        }else if(isFav())//add by hjy
+        {
+            derivedType = TYPE_FAV;
+            derivedIcon = R.drawable.ic_mime_directory;
+        } else if(isDocs()) {
+            derivedType = TYPE_DOCS;
+            derivedIcon = R.drawable.ic_root_doc_n;
+        }else if (isImages()) {
             derivedType = TYPE_IMAGES;
             derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
         } else if (isVideos()) {
@@ -262,6 +280,10 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         return isExternalStorage() && "home".equals(rootId);
     }
 
+    public boolean isNativeFolder() {
+        return isExternalStorage() && "primary".equals(rootId);
+    }
+
     public boolean isExternalStorage() {
         return Providers.AUTHORITY_STORAGE.equals(authority);
     }
@@ -270,9 +292,19 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         return Providers.AUTHORITY_DOWNLOADS.equals(authority);
     }
 
+    public boolean isFav() {
+        return Providers.AUTHORITY_FAV.equals(authority);
+    }
+
     public boolean isImages() {
         return Providers.AUTHORITY_MEDIA.equals(authority)
                 && Providers.ROOT_ID_IMAGES.equals(rootId);
+    }
+
+    public boolean isDocs() {
+        // return Providers.AUTHORITY_MEDIA.equals(authority)
+        //         && Providers.ROOT_ID_DOCS.equals(rootId);
+         return Providers.ROOT_ID_DOCS.equals(rootId);
     }
 
     public boolean isVideos() {
@@ -293,7 +325,8 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
      * Return true, if the derivedType of this root is library type. Otherwise, return false.
      */
     public boolean isLibrary() {
-        return derivedType == TYPE_IMAGES
+        return derivedType == TYPE_DOCS
+                || derivedType == TYPE_IMAGES
                 || derivedType == TYPE_VIDEO
                 || derivedType == TYPE_AUDIO
                 || derivedType == TYPE_RECENTS;
@@ -364,6 +397,8 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         }
 
         switch (derivedType) {
+            case TYPE_DOCS:
+                return IconUtils.loadMimeIcon(context, MimeTypes.DOCS_MIME);
             case TYPE_IMAGES:
                 return IconUtils.loadMimeIcon(context, MimeTypes.IMAGE_MIME);
             case TYPE_AUDIO:
@@ -446,6 +481,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
                 + "authority=" + authority
                 + ", rootId=" + rootId
                 + ", title=" + title
+                + ", mimeTypes=" + mimeTypes
                 + ", isUsb=" + isUsb()
                 + ", isSd=" + isSd()
                 + ", isMtp=" + isMtp()

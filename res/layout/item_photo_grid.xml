@@ -55,8 +55,8 @@
 
             <com.android.documentsui.GridItemThumbnail
                 android:id="@+id/icon_mime_lg"
-                android:layout_width="@dimen/icon_size"
-                android:layout_height="@dimen/icon_size"
+                android:layout_width="@dimen/preview_icon_size"
+                android:layout_height="@dimen/preview_icon_size"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:contentDescription="@null"/>

@@ -16,13 +16,14 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Title of the Files application [CHAR LIMIT=32] -->
-    <string name="files_label">Files</string>
+    <string name="files_label">Jing Files</string>
 
     <!-- Title of the Downloads application, which sometimes Files is known as [CHAR LIMIT=16] -->
     <string name="downloads_label">Downloads</string>
 
     <!-- Title of the documents application [CHAR LIMIT=32] -->
     <string name="app_label">@string/files_label</string>
+    <string name="root_docs">Documents</string>
 
     <!-- Title of the documents application [CHAR LIMIT=32] -->
     <string name="launcher_label">@string/files_label</string>
@@ -31,7 +32,7 @@
     <string name="title_open">Open from</string>
     <!-- Action bar title prompting user to choose a location to save a document to [CHAR LIMIT=32] -->
     <string name="title_save">Save to</string>
-
+    <string name="length_limited">The name up to the max length</string>
     <!-- Menu item that creates a new directory/folder at the current location [CHAR LIMIT=28] -->
     <string name="menu_create_dir">New folder</string>
     <!-- Menu item that switches view to show documents as a large-format grid of thumbnails [CHAR LIMIT=28] -->
@@ -53,6 +54,9 @@
     <string name="menu_save">Save</string>
     <!-- Menu item title that shares the selected documents [CHAR LIMIT=28] -->
     <string name="menu_share">Share</string>
+
+    <string name="menu_fav">Favorite</string>
+    <string name="menu_unfav">Remove favorite</string>
     <!-- Menu item title that deletes the selected documents [CHAR LIMIT=28] -->
     <string name="menu_delete">Delete</string>
     <!-- Menu item title that selects all documents in the current directory [CHAR LIMIT=28] -->
@@ -97,7 +101,7 @@
     <!-- Button label that select the current directory [CHAR LIMIT=24] -->
     <string name="button_select">Select</string>
     <!-- Button label that copies files to the current directory [CHAR LIMIT=24] -->
-    <string name="button_copy">Copy</string>
+    <string name="button_copy">Paste</string>
     <!-- Button label that compresses files to the current directory [CHAR LIMIT=24] -->
     <string name="button_compress">Compress</string>
     <!-- Button label that extracts files to the current directory [CHAR LIMIT=24] -->
@@ -314,6 +318,7 @@
     <string name="file_operation_error">File operation failed.</string>
     <!-- Toast shown when renaming document failed with an error [CHAR LIMIT=48] -->
     <string name="rename_error">Failed to rename document</string>
+    <string name="rename_error_empty">Document name can not be empty</string>
     <!-- Context Menu item that ejects the root selected [CHAR LIMIT=24] -->
     <string name="menu_eject_root">Eject</string>
     <!-- First line for notifications saying that some files were converted to a different format
@@ -457,4 +462,7 @@
 
     <!-- Content description for deleting search history. [CHAR_LIMIT=60] -->
     <string name="delete_search_history">Delete search history <xliff:g id="text" example="image">%1$s</xliff:g></string>
+
+    <string name="root_type_other">Others</string>
+    <string name="root_type_local">Local</string>
 </resources>

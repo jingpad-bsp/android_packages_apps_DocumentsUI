@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.FileUtils;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,12 +49,14 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.documentsui.base.DocumentInfo;
 import com.android.documentsui.base.Shared;
+import com.android.documentsui.LengthFilterToast;
 import com.android.documentsui.ui.Snackbars;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
+import android.text.TextUtils;
 /**
  * Dialog to create a new directory.
  */
@@ -75,6 +78,7 @@ public class CreateDirectoryFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_file_name, null, false);
         final EditText editText = (EditText) view.findViewById(android.R.id.text1);
+        editText.setFilters(new InputFilter[] {new LengthFilterToast(getActivity(), Shared.MAX_TEXT_LENGTH)});
 
         final TextInputLayout inputWrapper = view.findViewById(R.id.input_wrapper);
         inputWrapper.setHint(getString(R.string.input_hint_new_folder));
@@ -118,6 +122,10 @@ public class CreateDirectoryFragment extends DialogFragment {
     }
 
     private void createDirectory(String name) {
+        //zzc 设置默认文件夹名称为“新建文件夹”
+        if(TextUtils.isEmpty(name)){
+            name = getActivity().getResources().getString(R.string.menu_create_dir);
+        }
         final BaseActivity activity = (BaseActivity) getActivity();
         final DocumentInfo cwd = activity.getCurrentDirectory();
 

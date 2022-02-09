@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/memu_icons"
+        android:title="网格">
+
+    </item>
+
+    <item
+        android:id="@+id/menu_list"
+        android:title="列表">
+
+    </item>
+
+    <item
+        android:id="@+id/menu_select_all"
+        android:title="全选"/>
+
+
+</menu>

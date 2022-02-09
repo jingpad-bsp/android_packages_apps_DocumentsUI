@@ -19,6 +19,7 @@ package com.android.documentsui.files;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
@@ -30,6 +31,7 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.selection.SelectionTracker;
 
+import com.android.documentsui.BaseActivity;
 import com.android.documentsui.R;
 import com.android.documentsui.base.DocumentInfo;
 import com.android.documentsui.base.Features;
@@ -37,6 +39,7 @@ import com.android.documentsui.base.Lookup;
 import com.android.documentsui.base.RootInfo;
 import com.android.documentsui.base.State;
 import com.android.documentsui.queries.SearchViewManager;
+import com.android.documentsui.util.FormatUtils;
 
 import java.util.List;
 import java.util.function.IntFunction;
@@ -48,6 +51,8 @@ public final class MenuManager extends com.android.documentsui.MenuManager {
     private final SelectionTracker<String> mSelectionManager;
     private final Lookup<String, Uri> mUriLookup;
     private final Lookup<String, String> mAppNameLookup;
+
+    private boolean needFav = false;
 
     public MenuManager(
             Features features,
@@ -230,12 +235,52 @@ public final class MenuManager extends com.android.documentsui.MenuManager {
     }
 
     @Override
+    protected void updateGridOrList(MenuItem gridOrList) {
+
+    }
+
+    @Override
     protected void updateShare(MenuItem share, SelectionDetails selectionDetails) {
         boolean enabled = !selectionDetails.containsDirectories()
                 && !selectionDetails.containsPartialFiles()
                 && !selectionDetails.canExtract();
         share.setVisible(enabled);
         share.setEnabled(enabled);
+    }
+
+    @Override
+    protected void updateFav(MenuItem fav, SelectionDetails selectionDetails) {//add by hjy
+        if(needFav)
+        {
+            if(selectionDetails.containsDirectories() && selectionDetails.size() == 1 && !selectionDetails.isFavFile() && FormatUtils.canFav)
+            {
+                fav.setVisible(true);
+                fav.setEnabled(true);
+            }else{
+                fav.setVisible(false);
+                fav.setEnabled(false);
+            }
+        }else
+        {
+            fav.setVisible(false);
+        }
+    }
+
+    @Override
+    protected void updateUnfav(MenuItem unfav, SelectionDetails selectionDetails) {//add by hjy
+        if(needFav)
+        {
+            if(selectionDetails.isFavFile() && selectionDetails.size() == 1 && FormatUtils.canFav) {
+                unfav.setVisible(true);
+                unfav.setEnabled(true);
+            }else {
+                unfav.setVisible(false);
+                unfav.setEnabled(false);
+            }
+        }else
+        {
+            unfav.setVisible(false);
+        }
     }
 
     @Override

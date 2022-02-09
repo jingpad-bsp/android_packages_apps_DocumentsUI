@@ -87,6 +87,8 @@ public class ProvidersCache implements ProvidersAccess {
 
     private final RootInfo mRecentsRoot;
 
+    private RootInfo mTestRoot;//add by hjy
+
     private final Object mLock = new Object();
     private final CountDownLatch mFirstLoad = new CountDownLatch(1);
 
@@ -110,7 +112,7 @@ public class ProvidersCache implements ProvidersAccess {
         // Create a new anonymous "Recents" RootInfo. It's a faker.
         mRecentsRoot = new RootInfo() {{
             // Special root for recents
-            derivedIcon = R.drawable.ic_root_recent;
+            derivedIcon = R.drawable.ic_root_recent_n;
             derivedType = RootInfo.TYPE_RECENTS;
             flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD | Root.FLAG_SUPPORTS_SEARCH;
             queryArgs = QUERY_ARG_MIME_TYPES;
@@ -153,7 +155,6 @@ public class ProvidersCache implements ProvidersAccess {
         // For that reason we update our RecentsRoot to reflect
         // the current language.
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
-
         // Nothing else about the root should ever change.
         assert(mRecentsRoot.authority == null);
         assert(mRecentsRoot.rootId == null);
@@ -377,6 +378,14 @@ public class ProvidersCache implements ProvidersAccess {
 
     public boolean isRecentsRoot(RootInfo root) {
         return mRecentsRoot.equals(root);
+    }
+
+    public RootInfo getTestRoot() {
+        return mTestRoot;
+    }
+
+    public boolean isTestRoot(RootInfo root) {
+        return mTestRoot.equals(root);
     }
 
     @Override

@@ -180,6 +180,7 @@
     <string name="file_operation_rejected" msgid="4301554203329008794">"不支援檔案操作。"</string>
     <string name="file_operation_error" msgid="2234357335716533795">"檔案操作失敗。"</string>
     <string name="rename_error" msgid="6700093173508118635">"無法重新命名文件"</string>
+    <string name="rename_error_empty">"文件名或文件夾名不能爲空!"</string>
     <string name="menu_eject_root" msgid="9215040039374893613">"逐出"</string>
     <string name="notification_copy_files_converted_title" msgid="6916768494891833365">"部分檔案已轉換成其他格式"</string>
     <string name="open_external_dialog_request" msgid="8173558471322861268">"要為「<xliff:g id="APPNAME"><b>^1</b></xliff:g>」開放 <xliff:g id="STORAGE"><i>^3</i></xliff:g>上的「<xliff:g id="DIRECTORY"><i>^2</i></xliff:g>」目錄存取權嗎？"</string>

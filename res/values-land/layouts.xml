@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<!-- Copyright (C) 2015 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,16 +15,6 @@
 -->
 
 <resources>
-    <dimen name="list_item_height">64dp</dimen>
-    <dimen name="list_item_padding">24dp</dimen>
-    <dimen name="list_item_icon_padding">12dp</dimen>
-
-    <dimen name="list_divider_inset">80dp</dimen>
-
-    <dimen name="max_drawer_width">320dp</dimen>
-
-    <dimen name="search_bar_background_margin_start">280dp</dimen>
-    <dimen name="search_bar_background_margin_end">280dp</dimen>
-    <dimen name="search_bar_text_margin_start">270dp</dimen>
-    <dimen name="search_bar_text_margin_end">182dp</dimen>
+    <item name="documents_activity" type="layout">@layout/fixed_layout</item>
+    <item name="files_activity" type="layout">@layout/fixed_layout</item>
 </resources>

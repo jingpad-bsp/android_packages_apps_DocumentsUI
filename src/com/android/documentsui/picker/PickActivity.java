@@ -28,10 +28,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.DocumentsContract;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
@@ -159,6 +161,12 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
         super.onSaveInstanceState(state);
         state.putParcelable(Shared.EXTRA_PICK_RESULT, mInjector.pickResult);
     }
+
+//    @Override
+//    public void showPopupMenu(View view) {
+//        Log.e("jake", "pop ... do nothing");
+//    }
+
 
     @Override
     protected void onResume() {
@@ -359,6 +367,17 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
             // Replace selected file
             SaveFragment.get(fm).setReplaceTarget(doc);
         }
+    }
+
+    @Override
+    public void onDirFaved(List<DocumentInfo> docs) {//add by hjy
+        Log.d("hjy", "PickActivity onDirFaved docs.size == " + docs.size());
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void onDirUnfaved(List<DocumentInfo> docs) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

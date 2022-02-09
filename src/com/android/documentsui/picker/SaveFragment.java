@@ -19,6 +19,7 @@ package com.android.documentsui.picker;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -41,6 +42,7 @@ import com.android.documentsui.R;
 import com.android.documentsui.base.BooleanConsumer;
 import com.android.documentsui.base.DocumentInfo;
 import com.android.documentsui.base.Shared;
+import com.android.documentsui.LengthFilterToast;
 
 /**
  * Display document title editor and save button.
@@ -91,6 +93,7 @@ public class SaveFragment extends Fragment {
         mDisplayName = (EditText) view.findViewById(android.R.id.title);
         mDisplayName.addTextChangedListener(mDisplayNameWatcher);
         mDisplayName.setText(getArguments().getString(EXTRA_DISPLAY_NAME));
+        mDisplayName.setFilters(new InputFilter[] {new LengthFilterToast(getActivity(), Shared.MAX_TEXT_LENGTH)});
         mDisplayName.setOnKeyListener(
                 new View.OnKeyListener() {
                     @Override

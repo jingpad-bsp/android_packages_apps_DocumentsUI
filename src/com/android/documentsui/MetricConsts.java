@@ -40,6 +40,8 @@ public class MetricConsts {
     public static final int ROOT_VIDEOS = 9;
     public static final int ROOT_MTP = 10;
     public static final int ROOT_THIRD_PARTY_APP = 11;
+    public static final int ROOT_DOCS = 12;
+    public static final int ROOT_FAV = 13;
 
     @IntDef(flag = true, value = {
             ROOT_UNKNOWN,
@@ -53,7 +55,9 @@ public class MetricConsts {
             ROOT_RECENTS,
             ROOT_VIDEOS,
             ROOT_MTP,
-            ROOT_THIRD_PARTY_APP
+            ROOT_THIRD_PARTY_APP,
+            ROOT_DOCS,
+            ROOT_FAV
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Root {
@@ -68,7 +72,8 @@ public class MetricConsts {
     static final int MIME_IMAGE = 5; // image/*
     static final int MIME_MESSAGE = 6; // message/*
     static final int MIME_MULTIPART = 7; // multipart/*
-    static final int MIME_TEXT = 8; // text/*
+//    static final int MIME_TEXT = 8; // text/*
+    static final int MINE_DOCS = 8; // text/*
     static final int MIME_VIDEO = 9; // video/*
     static final int MIME_OTHER = 10; // anything not enumerated below
 
@@ -81,7 +86,8 @@ public class MetricConsts {
             MIME_IMAGE,
             MIME_MESSAGE,
             MIME_MULTIPART,
-            MIME_TEXT,
+//            MIME_TEXT,
+            MINE_DOCS,
             MIME_VIDEO,
             MIME_OTHER
     })
@@ -363,6 +369,7 @@ public class MetricConsts {
     public static final int TYPE_CHIP_DOCS = 4;
     public static final int TYPE_SEARCH_HISTORY = 5;
     public static final int TYPE_SEARCH_STRING = 6;
+//    public static final int TYPE_SEARCH_STRING = 6;
 
     @IntDef(flag = true, value = {
             TYPE_UNKNOWN,

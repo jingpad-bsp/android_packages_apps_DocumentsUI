@@ -27,6 +27,7 @@ public final class MimeTypes {
     public static final String APK_TYPE = "application/vnd.android.package-archive";
     public static final String GENERIC_TYPE = "application/*";
 
+    public static final String DOCS_MIME = "text/*";
     public static final String IMAGE_MIME = "image/*";
     public static final String AUDIO_MIME = "audio/*";
     public static final String VIDEO_MIME = "video/*";

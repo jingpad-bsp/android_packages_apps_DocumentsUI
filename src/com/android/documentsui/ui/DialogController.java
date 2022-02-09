@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
@@ -179,8 +180,10 @@ public interface DialogController {
 
         @Override
         public void showNoApplicationFound() {
-            Snackbars.makeSnackbar(
-                    mActivity, R.string.toast_no_application, Snackbar.LENGTH_SHORT).show();
+//            Snackbars.makeSnackbar(
+//                    mActivity, R.string.toast_no_application, Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(
+                    mActivity, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
         }
 
         @Override

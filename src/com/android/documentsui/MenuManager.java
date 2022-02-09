@@ -70,6 +70,9 @@ public abstract class MenuManager {
         updateViewInOwner(menu.findItem(R.id.action_menu_view_in_owner), selection);
         updateSort(menu.findItem(R.id.action_menu_sort));
 
+        updateFav(menu.findItem(R.id.action_menu_fav), selection);//add by hjy
+        updateUnfav(menu.findItem(R.id.action_menu_unfav), selection);//add by hjy
+
         Menus.disableHiddenItems(menu);
     }
 
@@ -84,12 +87,13 @@ public abstract class MenuManager {
             return;
         }
         updateCreateDir(mOptionMenu.findItem(R.id.option_menu_create_dir));
+        updateGridOrList(mOptionMenu.findItem(R.id.option_menu_grid_or_list));
         updateSettings(mOptionMenu.findItem(R.id.option_menu_settings));
         updateSelectAll(mOptionMenu.findItem(R.id.option_menu_select_all));
-        updateNewWindow(mOptionMenu.findItem(R.id.option_menu_new_window));
+//        updateNewWindow(mOptionMenu.findItem(R.id.option_menu_new_window));
         updateAdvanced(mOptionMenu.findItem(R.id.option_menu_advanced));
         updateDebug(mOptionMenu.findItem(R.id.option_menu_debug));
-        updateInspect(mOptionMenu.findItem(R.id.option_menu_inspect));
+//        updateInspect(mOptionMenu.findItem(R.id.option_menu_inspect));
         updateSort(mOptionMenu.findItem(R.id.option_menu_sort));
 
         Menus.disableHiddenItems(mOptionMenu);
@@ -212,10 +216,12 @@ public abstract class MenuManager {
         MenuItem selectAll = menu.findItem(R.id.dir_menu_select_all);
         MenuItem createDir = menu.findItem(R.id.dir_menu_create_dir);
         MenuItem inspect = menu.findItem(R.id.dir_menu_inspect);
+//        MenuItem gridOrList = menu.findItem(R.id.dir_menu_g)
 
         paste.setEnabled(mDirDetails.hasItemsToPaste() && mDirDetails.canCreateDoc());
         updateSelectAll(selectAll);
         updateCreateDir(createDir);
+//        updateGridOrList()
         updateInspect(inspect);
     }
 
@@ -294,6 +300,14 @@ public abstract class MenuManager {
         share.setVisible(false);
     }
 
+    protected void updateFav(MenuItem fav, SelectionDetails selectionDetails) {//add by hjy
+        fav.setVisible(false);
+    }
+
+    protected void updateUnfav(MenuItem unfav, SelectionDetails selectionDetails) {//add by hjy
+        unfav.setVisible(false);
+    }
+
     protected void updateDelete(MenuItem delete, SelectionDetails selectionDetails) {
         delete.setVisible(false);
     }
@@ -351,6 +365,7 @@ public abstract class MenuManager {
 
     protected abstract void updateSelectAll(MenuItem selectAll);
     protected abstract void updateCreateDir(MenuItem createDir);
+    protected abstract void updateGridOrList(MenuItem gridOrList);
 
     /**
      * Access to meta data about the selection.
@@ -379,6 +394,8 @@ public abstract class MenuManager {
         boolean canOpenWith();
 
         boolean canViewInOwner();
+
+        boolean isFavFile();
     }
 
     public static class DirectoryDetails {
@@ -397,7 +414,13 @@ public abstract class MenuManager {
         }
 
         public boolean canCreateDoc() {
-            return isInRecents() ? false : mActivity.getCurrentDirectory().isCreateSupported();
+            /* bug 1475477 directory maybe nulll @{*/
+            DocumentInfo directory = mActivity.getCurrentDirectory();
+            if (directory == null) {
+                return false;
+            }
+            return isInRecents() ? false : directory.isCreateSupported();
+            /*}@*/
         }
 
         public boolean isInRecents() {

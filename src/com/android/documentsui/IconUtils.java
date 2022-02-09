@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.util.TypedValue;
 
 import com.android.documentsui.base.MimeTypes;
@@ -53,6 +54,55 @@ public class IconUtils {
      */
     public static Drawable loadMimeIcon(Context context, String mimeType) {
         if (mimeType == null) return null;
+        Log.e("jake2","load mine icon = " + mimeType);
+        switch (mimeType) {
+            case "image/*":
+                return context.getDrawable(R.drawable.ic_root_image_n);
+            case "image/jpeg":
+            case "image/png":
+            case "image/jpg":
+            case "image/gif":
+            case "image/bmp":
+                return context.getDrawable(R.drawable.ic_mime_image);
+            case "video/*":
+                return context.getDrawable(R.drawable.ic_root_video_n);
+            case "video/mp4":
+            case "video/avi":
+            case "video/mov":
+            case "video/rmvb":
+                return context.getDrawable(R.drawable.ic_mime_video);
+            case "audio/*":
+                return context.getDrawable(R.drawable.ic_root_audio_n);
+            case "audio/mp3":
+            case "audio/mpeg":
+                return context.getDrawable(R.drawable.ic_mime_audio);
+            case "application/vnd.android.package-archive": // apk
+                return context.getDrawable(R.drawable.ic_mime_apk);
+            case "application/json":
+                return context.getDrawable(R.drawable.ic_mime_json);
+            case "text/plain":
+                return context.getDrawable(R.drawable.ic_mime_text);
+            case "text/html": // xsl
+            case "text/xml":
+                return context.getDrawable(R.drawable.ic_mime_html);
+            case "application/octet-stream":
+                return context.getDrawable(R.drawable.ic_mime_dat);
+            case "application/zip":
+            return context.getDrawable(R.drawable.ic_mime_zip);
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": // word
+                return context.getDrawable(R.drawable.ic_mime_wd);
+            case "application/pdf": // pdf
+                return context.getDrawable(R.drawable.ic_mime_pdf);
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": // xsl
+                return context.getDrawable(R.drawable.ic_mime_xsl);
+            case "application/vnd.ms-powerpoint": // ppt
+                return context.getDrawable(R.drawable.ic_mime_ppt);
+
+            case "vnd.android.document/directory":
+                return context.getDrawable(R.drawable.ic_mime_directory);
+            case "multipart/related":
+                return context.getDrawable(R.drawable.ic_mime_unknown);
+        }
         return context.getContentResolver().getTypeInfo(mimeType).getIcon().loadDrawable(context);
     }
 
@@ -62,8 +112,8 @@ public class IconUtils {
     }
 
     public static Drawable applyTintColor(Context context, Drawable icon, int tintColorId) {
-        icon.mutate();
-        icon.setTintList(context.getColorStateList(tintColorId));
+//        icon.mutate();
+//        icon.setTintList(context.getColorStateList(tintColorId));
         return icon;
     }
 

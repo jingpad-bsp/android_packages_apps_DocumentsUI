@@ -315,7 +315,11 @@ class ActionHandler<T extends FragmentActivity & Addons> extends AbstractActionH
                     + details.getSelectionKey());
             return false;
         }
-
+        if (doc.equals(mActivity.getCurrentDirectory())) {
+            Log.w(TAG, "Current directory has been opend ignor it: "
+                    + doc.toString());
+            return false;
+        }
         if (mConfig.isDocumentEnabled(doc.mimeType, doc.flags, mState)) {
             mActivity.onDocumentPicked(doc);
             mSelectionMgr.clearSelection();

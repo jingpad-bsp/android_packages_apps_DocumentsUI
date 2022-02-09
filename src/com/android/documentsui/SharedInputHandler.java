@@ -60,14 +60,15 @@ public class SharedInputHandler {
         switch (keyCode) {
             // Unhandled ESC keys end up being rethrown back at us as BACK keys. So by returning
             // true, we make sure it always does no-op.
-            case KeyEvent.KEYCODE_ESCAPE:
-                return onEscape();
+//            case KeyEvent.KEYCODE_ESCAPE:
+//                return onEscape();
 
             case KeyEvent.KEYCODE_DEL:
                 return onDelete();
 
             // This is the Android back button, not backspace.
             case KeyEvent.KEYCODE_BACK:
+            case KeyEvent.KEYCODE_ESCAPE:
                 return onBack();
 
             case KeyEvent.KEYCODE_TAB:

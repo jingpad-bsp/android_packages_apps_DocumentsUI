@@ -43,6 +43,7 @@
             android:paddingEnd="16dp"
             android:paddingStart="@dimen/list_item_padding" >
 
+            <!-- 除去image/video 的其他类型           -->
             <ImageView
                 android:id="@+id/icon_mime"
                 android:layout_width="wrap_content"
@@ -51,6 +52,7 @@
                 android:contentDescription="@null"
                 android:scaleType="centerInside" />
 
+            <!--image / video  thumb-->
             <ImageView
                 android:id="@+id/icon_thumb"
                 android:layout_width="match_parent"
@@ -94,12 +96,18 @@
                 android:baselineAligned="false"
                 android:gravity="center_vertical"
                 android:orientation="horizontal" >
-
                 <TextView
-                    android:id="@+id/date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.4"
+                    android:layout_weight="0.38"
+                    />
+
+                <TextView
+                    android:id="@+id/file_type"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="0.35"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textAlignment="viewStart"
@@ -117,15 +125,15 @@
                     android:textAppearance="@android:style/TextAppearance.Material.Caption"/>
 
                 <TextView
-                    android:id="@+id/file_type"
+                    android:id="@+id/date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="0.3"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textAlignment="viewStart"
                     android:textAppearance="@android:style/TextAppearance.Material.Caption"/>
+
             </LinearLayout>
         </LinearLayout>
 

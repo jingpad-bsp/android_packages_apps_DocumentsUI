@@ -136,7 +136,7 @@ public class IconHelper {
             ImageView iconThumb,
             ImageView iconMime,
             @Nullable ImageView subIconMime) {
-        load(doc.derivedUri, doc.mimeType, doc.flags, doc.icon, doc.lastModified,
+        load(doc.displayName , doc.derivedUri, doc.mimeType, doc.flags, doc.icon, doc.lastModified,
                 iconThumb, iconMime, subIconMime);
     }
 
@@ -153,7 +153,7 @@ public class IconHelper {
      * @param subIconMime The second itemview's mime icon. Always visible.
      * @return
      */
-    public void load(Uri uri, String mimeType, int docFlags, int docIcon, long docLastModified,
+    public void load(String name , Uri uri, String mimeType, int docFlags, int docIcon, long docLastModified,
             ImageView iconThumb, ImageView iconMime, @Nullable ImageView subIconMime) {
         boolean loadedThumbnail = false;
 
@@ -168,8 +168,11 @@ public class IconHelper {
                 loadThumbnail(uri, docAuthority, docLastModified, iconThumb, iconMime);
         }
 
-        final Drawable mimeIcon = getDocumentIcon(mContext, docAuthority,
+         Drawable mimeIcon = getDocumentIcon(mContext, docAuthority,
                 DocumentsContract.getDocumentId(uri), mimeType, docIcon);
+        if (name != null && name.endsWith(".iwk")) {
+            mimeIcon = mContext.getDrawable(R.drawable.ic_mime_iwk);
+        }
         if (subIconMime != null) {
             setMimeIcon(subIconMime, mimeIcon);
         }

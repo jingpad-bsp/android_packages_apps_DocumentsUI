@@ -59,6 +59,11 @@ public class SearchFragment extends DialogFragment
     private List<String> mHistoryList;
 
     public static void showFragment(FragmentManager fm, String initQuery) {
+        /* unisoc bug1489848 state maybe saved in monkey @{*/
+        if (fm.isStateSaved()) {
+            return;
+        }
+        /* }@*/
         final SearchFragment fragment = new SearchFragment();
         final Bundle args = new Bundle();
         args.putString(KEY_QUERY, initQuery);
@@ -83,6 +88,10 @@ public class SearchFragment extends DialogFragment
     }
 
     private void onHistoryItemClicked(AdapterView<?> parent, View view, int position, long id) {
+        //zzc 防止IntextOutOfBoundsException
+        if(mHistoryList.size()<= position){
+            return;
+        }
         final String item = mHistoryList.get(position);
         mSearchViewManager.setHistorySearch();
         mSearchView.setQuery(item, true);
@@ -202,6 +211,8 @@ public class SearchFragment extends DialogFragment
             button.setOnClickListener(v -> {
                 mSearchViewManager.removeHistory(history);
                 mHistoryList.remove(history);
+                //zzc 删除搜索结果
+                remove(history);
                 notifyDataSetChanged();
             });
             button.setContentDescription(

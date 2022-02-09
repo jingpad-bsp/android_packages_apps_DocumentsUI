@@ -38,7 +38,9 @@
     </androidx.appcompat.widget.Toolbar>
 
     <!-- used for search chip. -->
-    <include layout="@layout/search_chip_row"/>
+    <include layout="@layout/search_chip_row"
+        android:visibility="gone"
+        />
 
     <ListView
         android:id="@+id/history_list"

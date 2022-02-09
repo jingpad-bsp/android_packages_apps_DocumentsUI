@@ -25,6 +25,8 @@
             android:bottomLeftRadius="2dp"
             android:bottomRightRadius="2dp"/>
         <solid
-            android:color="?android:attr/colorSecondary"/>
+
+            android:color="#223C4BE8"/>
+<!--        android:color="?android:attr/colorSecondary"-->
     </shape>
 </inset>

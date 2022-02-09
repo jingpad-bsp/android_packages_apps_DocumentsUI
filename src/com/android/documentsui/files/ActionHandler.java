@@ -32,6 +32,7 @@ import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.DragEvent;
+import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -75,7 +76,10 @@ import com.android.documentsui.services.FileOperation;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.services.FileOperations;
 import com.android.documentsui.ui.DialogController;
+import com.android.documentsui.util.FormatUtils;
+import com.android.documentsui.util.NoFastClickUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -142,9 +146,9 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
     @Override
     public void openSelectedInNewWindow() {
         Selection<String> selection = getStableSelection();
-        assert(selection.size() == 1);
+        assert (selection.size() == 1);
         DocumentInfo doc = mModel.getDocument(selection.iterator().next());
-        assert(doc != null);
+        assert (doc != null);
         openInNewWindow(new DocumentStack(mState.stack, doc));
     }
 
@@ -170,10 +174,10 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
     }
 
     @Override
-    public @Nullable DocumentInfo renameDocument(String name, DocumentInfo document) {
+    public @Nullable
+    DocumentInfo renameDocument(String name, DocumentInfo document) {
         ContentResolver resolver = mActivity.getContentResolver();
         ContentProviderClient client = null;
-
         try {
             client = DocumentsApplication.acquireUnstableProviderOrThrow(
                     resolver, document.derivedUri.getAuthority());
@@ -196,7 +200,7 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
 
     @Override
     public boolean openItem(ItemDetails<String> details, @ViewType int type,
-            @ViewType int fallback) {
+                            @ViewType int fallback) {
         DocumentInfo doc = mModel.getDocument(details.getSelectionKey());
         if (doc == null) {
             Log.w(TAG, "Can't view item. No Document available for modeId: "
@@ -211,24 +215,42 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
     // TODO: Make this private and make tests call openDocument(DocumentDetails, int, int) instead.
     @VisibleForTesting
     public boolean openDocument(DocumentInfo doc, @ViewType int type, @ViewType int fallback) {
-        if (mConfig.isDocumentEnabled(doc.mimeType, doc.flags, mState)) {
-            onDocumentPicked(doc, type, fallback);
-            mSelectionMgr.clearSelection();
-            return !doc.isContainer();
+        boolean isFastClick = NoFastClickUtils.isFastClick();
+        Log.e("{jake}", "isFastCLick :: " + isFastClick);
+
+        if (!isFastClick) {
+
+            Log.e("{jake}", "isFastCLick operation....................");
+            if (mConfig.isDocumentEnabled(doc.mimeType, doc.flags, mState)) {
+//            if (mActivity.isInMultiWindowMode()) {
+//                if(doc.mimeType.startsWith("audio/")
+//                || doc.mimeType.startsWith("video/")){
+//                    Toast.makeText(mActivity , "当前应用不支持在分屏模式下打开" , Toast.LENGTH_SHORT).show();
+//                    return false ;
+//                }
+//            }
+                onDocumentPicked(doc, type, fallback);
+                mSelectionMgr.clearSelection();
+                return !doc.isContainer();
+            }
+            return false;
+        } else {
+            return false;
         }
-        return false;
+
     }
 
     @Override
     public void springOpenDirectory(DocumentInfo doc) {
-        assert(doc.isDirectory());
+        assert (doc.isDirectory());
         mActionModeAddons.finishActionMode();
         openContainerDocument(doc);
     }
 
     private Selection<String> getSelectedOrFocused() {
         final MutableSelection<String> selection = this.getStableSelection();
-        if (selection.isEmpty()) {
+        //unisoc 1470282 check 'mFocusHandler' to avoid NullPointerException
+        if (selection.isEmpty() && mFocusHandler != null) {
             String focusModelId = mFocusHandler.getFocusModelId();
             if (focusModelId != null) {
                 selection.add(focusModelId);
@@ -325,7 +347,7 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
                         mModel::getItemUri,
                         mClipStore);
             } catch (Exception e) {
-                Log.e(TAG,"Failed to delete a file because we were unable to get item URIs.", e);
+                Log.e(TAG, "Failed to delete a file because we were unable to get item URIs.", e);
                 mDialogs.showFileOperationStatus(
                         FileOperations.Callback.STATUS_FAILED,
                         FileOperationService.OPERATION_DELETE,
@@ -353,19 +375,25 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
 
         Selection<String> selection = getStableSelection();
 
-        assert(!selection.isEmpty());
+        assert (!selection.isEmpty());
 
         // Model must be accessed in UI thread, since underlying cursor is not threadsafe.
         List<DocumentInfo> docs = mModel.loadDocuments(
                 selection, DocumentFilters.sharable(mFeatures));
-
         Intent intent;
 
         if (docs.size() == 1) {
             intent = new Intent(Intent.ACTION_SEND);
             DocumentInfo doc = docs.get(0);
             intent.setType(doc.mimeType);
-            intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
+//            intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
+            Uri share_uri = null;
+            if (FormatUtils.isDownloadsDocument(doc.derivedUri)) {//Zzc 下载模块分享时，将Uri转换成本地模块Uri
+                share_uri = FormatUtils.getExternalUriFromDocumentInfo(mActivity, doc);
+            } else {
+                share_uri = doc.derivedUri;
+            }
+            intent.putExtra(Intent.EXTRA_STREAM, share_uri);
 
         } else if (docs.size() > 1) {
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -374,7 +402,13 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
             final ArrayList<Uri> uris = new ArrayList<>();
             for (DocumentInfo doc : docs) {
                 mimeTypes.add(doc.mimeType);
-                uris.add(doc.derivedUri);
+                Uri share_uri = null;
+                if (FormatUtils.isDownloadsDocument(doc.derivedUri)) {//Zzc 下载模块分享时，将Uri转换成本地模块Uri
+                    share_uri = FormatUtils.getExternalUriFromDocumentInfo(mActivity, doc);
+                } else {
+                    share_uri = doc.derivedUri;
+                }
+                uris.add(share_uri);
             }
 
             intent.setType(MimeTypes.findCommonMimeType(mimeTypes));
@@ -406,7 +440,7 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
 
     @Override
     public void initLocation(Intent intent) {
-        assert(intent != null);
+        assert (intent != null);
 
         // stack is initialized if it's restored from bundle, which means we're restoring a
         // previously stored state.
@@ -536,7 +570,7 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
 
     @Override
     public void showChooserForDoc(DocumentInfo doc) {
-        assert(!doc.isDirectory());
+        assert (!doc.isDirectory());
 
         if (manageDocument(doc)) {
             Log.w(TAG, "Open with is not yet supported for managed doc.");
@@ -571,40 +605,40 @@ public class ActionHandler<T extends FragmentActivity & Addons> extends Abstract
         }
 
         switch (type) {
-          case VIEW_TYPE_REGULAR:
-            if (viewDocument(doc)) {
-                return;
-            }
-            break;
+            case VIEW_TYPE_REGULAR:
+                if (viewDocument(doc)) {
+                    return;
+                }
+                break;
 
-          case VIEW_TYPE_PREVIEW:
-            if (previewDocument(doc)) {
-                return;
-            }
-            break;
+            case VIEW_TYPE_PREVIEW:
+                if (previewDocument(doc)) {
+                    return;
+                }
+                break;
 
-          default:
-            throw new IllegalArgumentException("Illegal view type.");
+            default:
+                throw new IllegalArgumentException("Illegal view type.");
         }
 
         switch (fallback) {
-          case VIEW_TYPE_REGULAR:
-            if (viewDocument(doc)) {
-                return;
-            }
-            break;
+            case VIEW_TYPE_REGULAR:
+                if (viewDocument(doc)) {
+                    return;
+                }
+                break;
 
-          case VIEW_TYPE_PREVIEW:
-            if (previewDocument(doc)) {
-                return;
-            }
-            break;
+            case VIEW_TYPE_PREVIEW:
+                if (previewDocument(doc)) {
+                    return;
+                }
+                break;
 
-          case VIEW_TYPE_NONE:
-            break;
+            case VIEW_TYPE_NONE:
+                break;
 
-          default:
-            throw new IllegalArgumentException("Illegal fallback view type.");
+            default:
+                throw new IllegalArgumentException("Illegal fallback view type.");
         }
 
         // Failed to view including fallback, and it's in an archive.

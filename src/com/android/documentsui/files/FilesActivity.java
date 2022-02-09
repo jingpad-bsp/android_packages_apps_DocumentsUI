@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
@@ -46,6 +47,7 @@ import com.android.documentsui.R;
 import com.android.documentsui.SharedInputHandler;
 import com.android.documentsui.ShortcutsUpdater;
 import com.android.documentsui.base.DocumentInfo;
+import com.android.documentsui.base.DurableUtils;
 import com.android.documentsui.base.Features;
 import com.android.documentsui.base.RootInfo;
 import com.android.documentsui.base.State;
@@ -54,10 +56,13 @@ import com.android.documentsui.dirlist.AnimationView.AnimationType;
 import com.android.documentsui.dirlist.AppsRowManager;
 import com.android.documentsui.dirlist.DirectoryFragment;
 import com.android.documentsui.prefs.ScopedPreferences;
+import com.android.documentsui.queries.FavFileListDataManager;
+import com.android.documentsui.queries.SearchHistoryManager;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
 import com.android.documentsui.ui.MessageBuilder;
+import com.android.documentsui.util.FormatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,6 +185,18 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
         presentFileErrors(icicle, intent);
     }
 
+
+    /* UNISOC 1688381:Send broadcast to update available space @{*/
+    private void updateStorageBroadcast() {
+        Intent intentUpdate = new Intent();
+
+        intentUpdate.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentUpdate.setAction("com.documentsui.storage.update");
+        FilesActivity.this.sendBroadcast(intentUpdate);
+        Log.d(TAG, "updateStorageBroadcast");
+    }
+    /* }@ */
+
     // This is called in the intent contains label and icon resources.
     // When that is true, the launcher activity has supplied them so we
     // can adapt our presentation to how we were launched.
@@ -260,6 +277,8 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
     public void onResume() {
         super.onResume();
 
+        Log.e("likenk", "FilesActivity onResume:");
+
         final RootInfo root = getCurrentRoot();
 
         // If we're browsing a specific root, and that root went away, then we
@@ -268,15 +287,18 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
         // the user what has happened, let them close us. Less surprising.
         if (mProviders.getRootBlocking(root.authority, root.rootId) == null) {
             finish();
+        } else {
+            updateStorageBroadcast();
         }
     }
 
     @Override
     public String getDrawerTitle() {
         Intent intent = getIntent();
-        return (intent != null && intent.hasExtra(Intent.EXTRA_TITLE))
-                ? intent.getStringExtra(Intent.EXTRA_TITLE)
-                : getString(R.string.app_label);
+//        return (intent != null && intent.hasExtra(Intent.EXTRA_TITLE))
+//                ? intent.getStringExtra(Intent.EXTRA_TITLE)
+//                : getString(R.string.app_label);
+      return "";
     }
 
     @Override
@@ -294,18 +316,18 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
                 assert(canCreateDirectory());
                 mInjector.actions.showCreateDirectoryDialog();
                 break;
-            case R.id.option_menu_new_window:
-                mInjector.actions.openInNewWindow(mState.stack);
-                break;
+//            case R.id.option_menu_new_window:
+//                mInjector.actions.openInNewWindow(mState.stack);
+//                break;
             case R.id.option_menu_settings:
                 mInjector.actions.openSettings(getCurrentRoot());
                 break;
             case R.id.option_menu_select_all:
                 mInjector.actions.selectAllFiles();
                 break;
-            case R.id.option_menu_inspect:
-                mInjector.actions.showInspector(getCurrentDirectory());
-                break;
+//            case R.id.option_menu_inspect:
+//                mInjector.actions.showInspector(getCurrentDirectory());
+//                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -329,6 +351,8 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
         if (mState.stack.isRecents()) {
             DirectoryFragment.showRecentsOpen(fm, anim);
         } else {
+//            Log.d("hjy", "FilesActivity refreshDirectory root == " + root.toString());
+//            Log.d("hjy", "FilesActivity refreshDirectory DocumentInfo == " + cwd.toString());
             // Normal boring directory
             DirectoryFragment.showDirectory(fm, root, cwd, anim);
         }
@@ -338,6 +362,25 @@ public class FilesActivity extends BaseActivity implements ActionHandler.Addons 
     public void onDocumentsPicked(List<DocumentInfo> docs) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void onDirFaved(List<DocumentInfo> docs) {
+        FavFileListDataManager favManager = FavFileListDataManager.getInstance(this);
+        for(int i = 0; i < docs.size(); i++){
+            DocumentInfo di = docs.get(i);
+            favManager.addFav(FormatUtils.getPath(this, di.derivedUri));
+        }
+    }
+
+    @Override
+    public void onDirUnfaved(List<DocumentInfo> docs) {
+        FavFileListDataManager favManager = FavFileListDataManager.getInstance(this);
+        for(int i = 0; i < docs.size(); i++){
+            DocumentInfo di = docs.get(i);
+            favManager.deleteFav(FormatUtils.getPath(this, di.derivedUri));
+        }
+    }
+
 
     @Override
     public void onDocumentPicked(DocumentInfo doc) {

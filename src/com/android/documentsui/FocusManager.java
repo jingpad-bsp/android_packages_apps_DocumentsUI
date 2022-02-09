@@ -236,6 +236,11 @@ public final class FocusManager extends FocusDelegate<String> implements FocusHa
         if (mScope.lastFocusPosition != RecyclerView.NO_POSITION) {
             DocumentHolder holder = (DocumentHolder) mScope.view
                     .findViewHolderForAdapterPosition(mScope.lastFocusPosition);
+            /* unisoc bug1489848 holder maybe null in monkey @{*/
+            if (holder == null) {
+                return null;
+            }
+            /* }@ */
             return holder.getModelId();
         }
         return null;
@@ -555,7 +560,9 @@ public final class FocusManager extends FocusDelegate<String> implements FocusHa
                                     // between 500 and 750 ms. A smaller timer period results in
                                     // less
                                     // variability but does more polling.
-                                    mTimer.schedule(new TimeoutTask(), 0, SEARCH_TIMEOUT / 2);
+                                    if(mActive){
+                                        mTimer.schedule(new TimeoutTask(), 0, SEARCH_TIMEOUT / 2);
+                                    }
                                 }
                             });
                     break;
@@ -566,6 +573,7 @@ public final class FocusManager extends FocusDelegate<String> implements FocusHa
         /** Ends the current search (see {@link #search()}. */
         private void endSearch() {
             if (mActive) {
+                mActive = false;
                 mScope.model.removeUpdateListener(mModelListener);
                 mTimer.cancel();
             }
@@ -574,7 +582,6 @@ public final class FocusManager extends FocusDelegate<String> implements FocusHa
 
             mIndex = null;
             mSearchString.clear();
-            mActive = false;
         }
 
         /**

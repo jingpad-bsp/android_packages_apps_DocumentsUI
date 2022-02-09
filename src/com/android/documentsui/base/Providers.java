@@ -35,7 +35,12 @@ public final class Providers {
     public static final String AUTHORITY_DOWNLOADS = "com.android.providers.downloads.documents";
     public static final String ROOT_ID_DOWNLOADS = "downloads";
 
+    //add by hjy start
+    public static final String AUTHORITY_FAV = "com.android.documentsui.fav";
+    //add by hjy end
+
     public static final String AUTHORITY_MEDIA = "com.android.providers.media.documents";
+    public static final String ROOT_ID_DOCS = "docs_root";
     public static final String ROOT_ID_IMAGES = "images_root";
     public static final String ROOT_ID_VIDEOS = "videos_root";
     public static final String ROOT_ID_AUDIO = "audio_root";
@@ -46,6 +51,7 @@ public final class Providers {
     private static final Set<String> SYSTEM_AUTHORITIES = new HashSet<String>() {{
         add(AUTHORITY_STORAGE);
         add(AUTHORITY_DOWNLOADS);
+        add(AUTHORITY_FAV);//add by hjy
         add(AUTHORITY_MEDIA);
         add(AUTHORITY_MTP);
     }};

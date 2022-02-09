@@ -103,7 +103,8 @@ public final class InspectorController {
         mShowProvider = showProvider;
         mAppDefaults = appDefaults;
         mTitle = title;
-        mShowDebug = showDebug;
+//        mShowDebug = showDebug;
+        mShowDebug = false;
         mDebugView = debugView;
 
         mErrorSnackbar = errorRunnable;

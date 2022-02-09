@@ -90,6 +90,7 @@ public class SearchViewManager implements
     private MenuItem mMenuItem;
     private SearchView mSearchView;
 
+    private boolean mSaveInstanceState;
     public SearchViewManager(
             SearchManagerListener listener,
             EventHandler<String> commandProcessor,
@@ -109,7 +110,7 @@ public class SearchViewManager implements
             Handler handler) {
         assert (listener != null);
         assert (commandProcessor != null);
-
+        mSaveInstanceState = false;
         mSearchLock = new Object();
         mListener = listener;
         mCommandProcessor = commandProcessor;
@@ -354,6 +355,11 @@ public class SearchViewManager implements
      * change.
      */
     public void restoreSearch(boolean keepFocus) {
+        /*unisoc 1475332 searchView maybe null @{*/
+        if (mSearchView == null) {
+            return;
+        }
+        /* }@ */
         if (isTextSearching()) {
             onSearchBarClicked();
             mSearchView.setQuery(mCurrentSearch, false);
@@ -367,8 +373,10 @@ public class SearchViewManager implements
     }
 
     public void onSearchBarClicked() {
-        mMenuItem.expandActionView();
-        onSearchExpanded();
+        if(mMenuItem != null) {
+            mMenuItem.expandActionView();
+            onSearchExpanded();
+        }
     }
 
     private void onSearchExpanded() {
@@ -418,6 +426,7 @@ public class SearchViewManager implements
      * @param state Bundle to save state too
      */
     public void onSaveInstanceState(Bundle state) {
+        mSaveInstanceState = true;
         state.putString(Shared.EXTRA_QUERY, mCurrentSearch);
         mChipViewManager.onSaveInstanceState(state);
     }
@@ -455,6 +464,10 @@ public class SearchViewManager implements
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
+        if(mSaveInstanceState) {
+            Log.d(TAG, "Can not perform this action after onSaveInstanceState.");
+            return;
+        }
         if (!hasFocus && !mChipViewManager.hasCheckedItems()) {
             if (mCurrentSearch == null) {
                 mSearchView.setIconified(true);
@@ -538,8 +551,10 @@ public class SearchViewManager implements
      * Record current search for history.
      */
     public void recordHistory() {
-        SearchHistoryManager.getInstance(
-                mSearchView.getContext().getApplicationContext()).addHistory(mCurrentSearch);
+        if(mSearchView != null) {
+            SearchHistoryManager.getInstance(
+                    mSearchView.getContext().getApplicationContext()).addHistory(mCurrentSearch);
+        }
     }
 
     /**

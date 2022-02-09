@@ -32,7 +32,9 @@
         android:imeOptions="actionSearch"
         android:visible="false"
         app:showAsAction="always|collapseActionView"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        />
+<!--    -->
 <!-- This group is being hidden when searching is in full bar mode-->
     <group android:id="@+id/group_hide_when_searching">
         <item
@@ -41,18 +43,20 @@
             android:icon="@drawable/ic_debug_menu"
             android:visible="false"
             app:showAsAction="always"/>
-        <item
-            android:id="@+id/option_menu_new_window"
-            android:title="@string/menu_new_window"
-            android:alphabeticShortcut="n"
-            android:visible="false"
-            app:showAsAction="never"/>
+<!--        <item-->
+<!--            android:id="@+id/option_menu_new_window"-->
+<!--            android:title="@string/menu_new_window"-->
+<!--            android:alphabeticShortcut="n"-->
+<!--            android:visible="false"-->
+<!--            app:showAsAction="never"/>-->
         <item
             android:id="@+id/option_menu_create_dir"
             android:title="@string/menu_create_dir"
             android:alphabeticShortcut="e"
             android:visible="false"
             app:showAsAction="never"/>
+
+
         <item
             android:id="@+id/option_menu_sort"
             android:title="@string/menu_sort"
@@ -64,6 +68,14 @@
             android:alphabeticShortcut="a"
             android:visible="false"
             app:showAsAction="never"/>
+
+        <item
+            android:id="@+id/option_menu_grid_or_list"
+            android:title="@string/menu_grid"
+            android:alphabeticShortcut="c"
+            android:visible="true"
+            app:showAsAction="never"/>
+
         <item
             android:id="@+id/option_menu_advanced"
             android:visible="false"
@@ -73,10 +85,10 @@
             android:title="@string/menu_settings"
             android:visible="false"
             app:showAsAction="never"/>
-       <item
-           android:id="@+id/option_menu_inspect"
-           android:title="@string/menu_inspect"
-           android:visible="false"
-           app:showAsAction="never"/>
+<!--       <item-->
+<!--           android:id="@+id/option_menu_inspect"-->
+<!--           android:title="@string/menu_inspect"-->
+<!--           android:visible="false"-->
+<!--           app:showAsAction="never"/>-->
     </group>
 </menu>

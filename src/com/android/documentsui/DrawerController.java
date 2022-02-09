@@ -189,6 +189,9 @@ public abstract class DrawerController implements DrawerListener {
         @Override
         public void onDrawerSlide(View drawerView, float slideOffset) {
             mToggle.onDrawerSlide(drawerView, slideOffset);
+            // View content = mLayout.getChildAt(0);
+            // int offset = (int) (drawerView.getWidth() * slideOffset);
+            // content.setTranslationX(offset);
         }
 
         @Override

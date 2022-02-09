@@ -85,12 +85,14 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/roots_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
+                android:layout_height="0dp"
                 android:background="?android:attr/colorBackground"
                 android:elevation="0dp"
                 app:titleTextAppearance="@style/DrawerMenuTitle"
                 app:titleTextColor="?android:colorPrimary"/>
-
+<!--
+                android:layout_height="?android:attr/actionBarSize"
+-->
             <FrameLayout
                 android:id="@+id/container_roots"
                 android:layout_width="match_parent"
